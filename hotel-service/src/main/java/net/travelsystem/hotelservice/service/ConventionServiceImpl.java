@@ -7,6 +7,7 @@ import net.travelsystem.hotelservice.dto.convention.ConventionResponse;
 import net.travelsystem.hotelservice.entities.Convention;
 import net.travelsystem.hotelservice.entities.Hotel;
 import net.travelsystem.hotelservice.entities.Room;
+import net.travelsystem.hotelservice.exceptions.ConventionException;
 import net.travelsystem.hotelservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.hotelservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.hotelservice.mapper.ConventionMapper;
@@ -71,6 +72,7 @@ public class ConventionServiceImpl implements ConventionService {
                             co.getIdentifier()));
                 });
 
+        checkRules(convention);
         Integer rooms = calculateAvailableRooms(hotel);
         convention.setAvailableRooms(rooms);
 
@@ -85,5 +87,11 @@ public class ConventionServiceImpl implements ConventionService {
                 .filter(Room::getAvailable)
                 .mapToInt(room -> 1)
                 .sum();
+    }
+    private void checkRules(Convention convention){
+        if (convention.getCheckOutDate().isBefore(convention.getCheckInDate()))
+            throw new ConventionException("La date du check-out ne peut pas être inférieure à la date du check-in");
+        if (convention.getCheckOutDate().isEqual(convention.getCheckInDate()))
+            throw new ConventionException("La date du check-out ne peut pas être la même que la date du check-in");
     }
 }

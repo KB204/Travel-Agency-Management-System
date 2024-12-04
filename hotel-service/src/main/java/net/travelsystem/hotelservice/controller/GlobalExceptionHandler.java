@@ -1,6 +1,7 @@
 package net.travelsystem.hotelservice.controller;
 
 import net.travelsystem.hotelservice.dto.ErrorResponse;
+import net.travelsystem.hotelservice.exceptions.ConventionException;
 import net.travelsystem.hotelservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.hotelservice.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +39,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse error = new ErrorResponse("Erreurs fonctionnelles", details);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
-
+    @ExceptionHandler(ConventionException.class)
+    final ResponseEntity<Object> handleConventionException(ConventionException ex){
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Erreurs fonctionnelles", details);
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(ResourceAlreadyExists.class)
     final ResponseEntity<Object> handleResourceAlreadyExistsException(ResourceAlreadyExists ex) {
         List<String> details = new ArrayList<>();

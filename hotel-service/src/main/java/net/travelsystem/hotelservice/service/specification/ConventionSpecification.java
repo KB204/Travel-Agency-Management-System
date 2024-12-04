@@ -27,18 +27,21 @@ public class ConventionSpecification {
                         .orElse(criteriaBuilder.conjunction());
     }
 
-    public static Specification<Convention> checkInDateLike(String checkIn){
+    public static Specification<Convention> checkInDateLike(String checkIn) {
         return (root, query, criteriaBuilder) ->
                 Optional.ofNullable(checkIn)
-                        .map(convention -> criteriaBuilder.like(root.get("checkInDate").as(String.class),
+                        .map(date -> criteriaBuilder.like(
+                                criteriaBuilder.function("TO_CHAR", String.class, root.get("checkInDate"), criteriaBuilder.literal("YYYY-MM-DD")),
                                 checkIn + "%"))
                         .orElse(criteriaBuilder.conjunction());
     }
 
+
     public static Specification<Convention> checkOutDateLike(String checkOut){
         return (root, query, criteriaBuilder) ->
                 Optional.ofNullable(checkOut)
-                        .map(convention -> criteriaBuilder.like(root.get("checkOutDate").as(String.class),
+                        .map(convention -> criteriaBuilder.like(
+                                criteriaBuilder.function("TO_CHAR", String.class, root.get("checkOutDate"), criteriaBuilder.literal("YYYY-MM-DD")),
                                 checkOut + "%"))
                         .orElse(criteriaBuilder.conjunction());
     }
