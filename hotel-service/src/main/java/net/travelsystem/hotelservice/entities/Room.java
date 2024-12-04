@@ -2,7 +2,6 @@ package net.travelsystem.hotelservice.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.travelsystem.hotelservice.enums.RoomType;
@@ -10,7 +9,6 @@ import net.travelsystem.hotelservice.enums.RoomType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 @Entity
 public class Room {
     @Id

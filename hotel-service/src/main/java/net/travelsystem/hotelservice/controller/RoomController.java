@@ -5,11 +5,12 @@ import net.travelsystem.hotelservice.dto.hotel.HotelDetailsDTO;
 import net.travelsystem.hotelservice.dto.room.RoomRequest;
 import net.travelsystem.hotelservice.dto.room.RoomResponse;
 import net.travelsystem.hotelservice.service.RoomService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -22,12 +23,32 @@ public class RoomController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<RoomResponse> findHotelRooms() { return service.findAllRooms(); }
+    Page<RoomResponse> findHotelRooms(
+            @RequestParam(required = false) String roomNumber,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Double price,
+            Pageable pageable) {
+        return service.findAllRooms(roomNumber, type, price, pageable); }
 
     @GetMapping("/{name}/{location}/details")
     @ResponseStatus(HttpStatus.OK)
-    HotelDetailsDTO getHotelDetails(@PathVariable String name, @PathVariable String location) {
-        return service.hotelDetails(name, location);
+    HotelDetailsDTO getHotelDetails(
+            @PathVariable String name,
+            @PathVariable String location,
+            @RequestParam(required = false) String roomNumber,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Double price,
+            Pageable pageable) {
+        return service.hotelDetails(roomNumber, type, price, name, location, pageable);
+    }
+    @GetMapping("/allAvailableRooms")
+    @ResponseStatus(HttpStatus.OK)
+    Page<RoomResponse> findHotelAvailableRooms(
+            @RequestParam(required = false) String roomNumber,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Double price,
+            Pageable pageable) {
+        return service.findAllAvailableRooms(roomNumber, type, price, pageable);
     }
 
     @PostMapping

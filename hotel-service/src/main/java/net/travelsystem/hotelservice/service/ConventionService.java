@@ -2,10 +2,13 @@ package net.travelsystem.hotelservice.service;
 
 import net.travelsystem.hotelservice.dto.convention.ConventionRequest;
 import net.travelsystem.hotelservice.dto.convention.ConventionResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.time.LocalDate;
 
 public interface ConventionService {
-    List<ConventionResponse> getAllConventions();
+    Page<ConventionResponse> getAllConventions(String identifier, Integer nbr, String checkIn, String checkOut,
+                                               LocalDate start, LocalDate end, Pageable pageable);
     void createHotelConvention(ConventionRequest request);
 }

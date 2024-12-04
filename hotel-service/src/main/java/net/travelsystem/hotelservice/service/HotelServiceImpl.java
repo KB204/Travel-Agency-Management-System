@@ -7,9 +7,14 @@ import net.travelsystem.hotelservice.entities.Hotel;
 import net.travelsystem.hotelservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.hotelservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.hotelservice.mapper.HotelMapper;
+import net.travelsystem.hotelservice.service.specification.HotelSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class HotelServiceImpl implements HotelService {
@@ -22,11 +27,15 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<HotelResponse> findAllHotels() {
-        return hotelRepository.findAll()
-                .stream()
-                .map(mapper::hotelToDtoResponse)
-                .toList();
+    public Page<HotelResponse> findAllHotels(String name, String location, Pageable pageable) {
+
+        Specification<Hotel> specification = HotelSpecification.filterWithoutConditions()
+                .and(HotelSpecification.hotelNameLike(name))
+                .and(HotelSpecification.hotelLocationLike(location));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("name").ascending());
+
+        return hotelRepository.findAll(specification,pageable)
+                .map(mapper::hotelToDtoResponse);
     }
 
     @Override
@@ -36,12 +45,7 @@ public class HotelServiceImpl implements HotelService {
                     throw new ResourceAlreadyExists(String.format("Hotel %s situé a %s exists déja",request.name(),request.location()));
                 });
 
-        Hotel hotel = Hotel.builder()
-                .name(request.name())
-                .location(request.location())
-                .contact(request.contact())
-                .build();
-
+        Hotel hotel = mapper.dtoRequestToHotel(request);
         hotelRepository.save(hotel);
     }
 

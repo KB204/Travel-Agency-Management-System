@@ -10,11 +10,17 @@ import net.travelsystem.hotelservice.entities.Room;
 import net.travelsystem.hotelservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.hotelservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.hotelservice.mapper.ConventionMapper;
+import net.travelsystem.hotelservice.service.specification.ConventionSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,11 +38,19 @@ public class ConventionServiceImpl implements ConventionService {
     }
 
     @Override
-    public List<ConventionResponse> getAllConventions() {
-        return conventionRepository.findAll()
-                .stream()
-                .map(mapper::conventionToDtoResponse)
-                .toList();
+    public Page<ConventionResponse> getAllConventions(String identifier, Integer nbr, String checkIn, String checkOut,
+                                                      LocalDate start, LocalDate end, Pageable pageable) {
+
+        Specification<Convention> specification = ConventionSpecification.filterWithoutConditions()
+                .and(ConventionSpecification.identifierEqual(identifier))
+                .and(ConventionSpecification.availableRoomsEqual(nbr))
+                .and(ConventionSpecification.checkInDateLike(checkIn))
+                .and(ConventionSpecification.checkOutDateLike(checkOut))
+                .and(ConventionSpecification.conventionDateBetween(start, end));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("checkInDate").descending());
+
+        return conventionRepository.findAll(specification,pageable)
+                .map(mapper::conventionToDtoResponse);
     }
 
     @Override

@@ -4,11 +4,12 @@ import jakarta.validation.Valid;
 import net.travelsystem.hotelservice.dto.hotel.HotelRequest;
 import net.travelsystem.hotelservice.dto.hotel.HotelResponse;
 import net.travelsystem.hotelservice.service.HotelService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/hotels")
@@ -21,7 +22,12 @@ public class HotelController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<HotelResponse> findAllHotels(){ return service.findAllHotels(); }
+    Page<HotelResponse> findAllHotels(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String location,
+            Pageable pageable) {
+        return service.findAllHotels(name, location, pageable);
+    }
 
     @PostMapping
     ResponseEntity<String> saveNewHotel(@RequestBody @Valid HotelRequest request){
