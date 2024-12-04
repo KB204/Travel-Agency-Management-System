@@ -93,5 +93,7 @@ public class ConventionServiceImpl implements ConventionService {
             throw new ConventionException("La date du check-out ne peut pas être inférieure à la date du check-in");
         if (convention.getCheckOutDate().isEqual(convention.getCheckInDate()))
             throw new ConventionException("La date du check-out ne peut pas être la même que la date du check-in");
+        if (convention.getCheckInDate().isBefore(LocalDate.now()))
+            throw new ConventionException("La date du check-in n'est pas valide");
     }
 }
