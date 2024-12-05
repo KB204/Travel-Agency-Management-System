@@ -44,8 +44,11 @@ public class RoomSpecification {
                         .orElse(criteriaBuilder.conjunction());
     }
 
-    public static Specification<Room> onlyAvailableRooms(){
+    public static Specification<Room> onlyParamRooms(Boolean available){
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.isTrue(root.get("available"));
+                Optional.ofNullable(available)
+                        .map(room -> criteriaBuilder.equal(root.get("available"),available))
+                        .orElse(criteriaBuilder.disjunction());
+
     }
 }

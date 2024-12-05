@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -52,17 +51,14 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Page<RoomResponse> findAllAvailableRooms(String roomNumber, String type, Double price,Pageable pageable) {
 
-        Specification<Room> specification = Specification.where(RoomSpecification.onlyAvailableRooms())
+        Specification<Room> specification = Specification.where(RoomSpecification.onlyParamRooms(true))
                 .and(RoomSpecification.roomNumberEqual(roomNumber))
                 .and(RoomSpecification.roomTypeEqual(type))
                 .and(RoomSpecification.roomPriceEqual(price));
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("price").descending());
 
-        return Optional.of(roomRepository.findAll(specification,pageable))
-                .filter(rooms -> !rooms.isEmpty())
-                .map(rooms -> rooms.map(mapper::roomToDtoResponse))
-                .orElseThrow(() -> new ResourceNotFoundException("Y'a pas de chambres disponibles pour le moment"));
-
+        return roomRepository.findAll(specification,pageable)
+                .map(mapper::roomToDtoResponse);
     }
 
     @Override
