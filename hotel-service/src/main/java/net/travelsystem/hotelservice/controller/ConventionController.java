@@ -34,6 +34,12 @@ public class ConventionController {
         return service.getAllConventions(identifier, nbr, checkIn, checkOut, start, end, pageable);
     }
 
+    @GetMapping("/{identifier}/details")
+    ResponseEntity<ConventionResponse> findConventionByIdentifier(@PathVariable String identifier) {
+        ConventionResponse conventionDetails = service.getConventionDetails(identifier);
+        return new ResponseEntity<>(conventionDetails,HttpStatus.OK);
+    }
+
     @PostMapping
     ResponseEntity<String> saveNewHotelConvention(@RequestBody @Valid ConventionRequest request){
         service.createHotelConvention(request);

@@ -79,6 +79,14 @@ public class ConventionServiceImpl implements ConventionService {
         conventionRepository.save(convention);
     }
 
+    @Override
+    public ConventionResponse getConventionDetails(String identifier) {
+        Convention convention = conventionRepository.findByIdentifierIgnoreCase(identifier)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("La convention identifié par %s n'existe pas",identifier)));
+
+        return mapper.conventionToDtoResponse(convention);
+    }
+
     private Integer calculateAvailableRooms(Hotel hotel){
         return Optional.ofNullable(hotel)
                 .map(Hotel::getRooms)

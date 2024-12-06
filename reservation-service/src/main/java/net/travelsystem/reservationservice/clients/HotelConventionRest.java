@@ -1,0 +1,32 @@
+package net.travelsystem.reservationservice.clients;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import net.travelsystem.reservationservice.config.FeignConfig;
+import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.time.LocalDate;
+
+@FeignClient(url = "http://localhost:8081",name = "hotel-service",configuration = FeignConfig.class)
+public interface HotelConventionRest {
+
+    @GetMapping("/api/conventions/{identifier}/details")
+    HotelConvention getHotelConventionDetails(@PathVariable String identifier);
+
+    @CircuitBreaker(name = "hotelService",fallbackMethod = "defaultHotelConvention")
+    @Retry(name = "retryHotelService")
+    @GetMapping("/api/conventions/{identifier}/details")
+    HotelConvention findHotelConvention(@PathVariable String identifier);
+
+    default HotelConvention defaultHotelConvention(String identifier, Exception ex){
+        return HotelConvention.builder()
+                .identifier(identifier)
+                .availableRooms(0)
+                .checkOutDate(LocalDate.now())
+                .checkOutDate(LocalDate.now())
+                .build();
+    }
+}

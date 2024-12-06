@@ -11,4 +11,5 @@ public interface ConventionService {
     Page<ConventionResponse> getAllConventions(String identifier, Integer nbr, String checkIn, String checkOut,
                                                LocalDate start, LocalDate end, Pageable pageable);
     void createHotelConvention(ConventionRequest request);
+    ConventionResponse getConventionDetails(String identifier);
 }
