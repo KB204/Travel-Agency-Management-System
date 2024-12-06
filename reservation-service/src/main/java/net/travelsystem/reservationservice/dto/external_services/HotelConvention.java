@@ -9,4 +9,5 @@ public record HotelConvention(
         String identifier,
         Integer availableRooms,
         LocalDate checkInDate,
-        LocalDate checkOutDate) {}
+        LocalDate checkOutDate,
+        HotelResponseDTO hotel) {}

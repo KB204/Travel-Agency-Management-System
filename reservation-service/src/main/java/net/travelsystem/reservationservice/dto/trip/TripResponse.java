@@ -12,5 +12,5 @@ public record TripResponse(
         String destination,
         Integer duration,
         Integer availablePlaces,
-        HotelConvention hotel,
-        FlightConvention flight) {}
+        HotelConvention hotelConvention,
+        FlightConvention flightConvention) {}

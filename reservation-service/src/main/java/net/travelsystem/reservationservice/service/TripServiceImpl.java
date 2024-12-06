@@ -29,7 +29,7 @@ public class TripServiceImpl implements TripService {
         return tripRepository.findAll()
                 .stream()
                 .map(trip -> {
-                    trip.setHotel(rest.findHotelConvention(trip.getHotelConventionIdentifier()));
+                    trip.setHotelConvention(rest.findHotelConvention(trip.getHotelConventionIdentifier()));
                     return mapper.tripToDtoResponse(trip);
                 })
                 .toList();
@@ -37,9 +37,9 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public void createTrip(TripRequest request) {
-        HotelConvention hotelConvention = rest.getHotelConventionDetails(request.hotelConvention());
+        HotelConvention hotelConvention = rest.getHotelConventionDetails(request.hotelConventionIdentifier());
 
-        tripRepository.findByHotelConventionIdentifierOrFlightConventionIdentifier(request.hotelConvention(), request.flightConvention())
+        tripRepository.findByHotelConventionIdentifierOrFlightConventionIdentifier(request.hotelConventionIdentifier(), request.flightConventionIdentifier())
                 .ifPresent(trip -> {
                     throw new ResourceAlreadyExists("Convention avec hotel ou compagnie aérienne exists déja");
                 });

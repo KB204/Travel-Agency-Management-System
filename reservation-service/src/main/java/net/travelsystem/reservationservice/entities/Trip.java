@@ -30,7 +30,7 @@ public class Trip {
     @OneToMany(mappedBy = "trip",cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
     @Transient
-    private HotelConvention hotel;
+    private HotelConvention hotelConvention;
     @Transient
-    private FlightConvention flight;
+    private FlightConvention flightConvention;
 }

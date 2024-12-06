@@ -4,6 +4,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import net.travelsystem.reservationservice.config.FeignConfig;
 import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
+import net.travelsystem.reservationservice.dto.external_services.HotelResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +26,9 @@ public interface HotelConventionRest {
         return HotelConvention.builder()
                 .identifier(identifier)
                 .availableRooms(0)
+                .checkInDate(LocalDate.now())
                 .checkOutDate(LocalDate.now())
-                .checkOutDate(LocalDate.now())
+                .hotel(new HotelResponseDTO("hotel non trouvé","hotel non trouvé"))
                 .build();
     }
 }

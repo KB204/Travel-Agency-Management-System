@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record TripRequest(
         @NotEmpty(message = "L'identifiant de la convention avec l'hotel est obligatoire")
-        String hotelConvention,
+        String hotelConventionIdentifier,
         @NotEmpty(message = "L'identifiant de la convention avec la compagnie aérienne est obligatoire")
-        String flightConvention,
+        String flightConventionIdentifier,
         @NotEmpty(message = "Le nom du voyage est obligatoire")
         String name,
         @NotEmpty(message = "La description est obligatoire")
