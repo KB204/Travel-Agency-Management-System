@@ -2,12 +2,14 @@ package net.travelsystem.reservationservice.service;
 
 import net.travelsystem.reservationservice.dto.trip.TripRequest;
 import net.travelsystem.reservationservice.dto.trip.TripResponse;
+import net.travelsystem.reservationservice.dto.trip.TripUpdateRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface TripService {
-    List<TripResponse> getAllTrips();
+    Page<TripResponse> getAllTrips(String name, Double price, String destination, String identifier, Pageable pageable);
     void createTrip(TripRequest request);
-    void updateTrip(TripRequest request);
+    void updateTrip(Long id, TripUpdateRequest request);
     void deleteTrip(Long id);
 }
