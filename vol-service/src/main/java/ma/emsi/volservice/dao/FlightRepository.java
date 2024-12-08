@@ -4,5 +4,8 @@ import ma.emsi.volservice.model.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Optional;
+
 public interface FlightRepository extends JpaRepository<Flight, Long>, JpaSpecificationExecutor<Flight> {
+    Optional<Flight> findByFlightNoIgnoreCaseAndOriginIgnoreCase(String flightNo, String origin);
 }

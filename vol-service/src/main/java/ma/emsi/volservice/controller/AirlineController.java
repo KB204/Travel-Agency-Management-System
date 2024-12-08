@@ -27,7 +27,7 @@ public class AirlineController {
     ResponseEntity<String> createAirline(@RequestBody AirlineRequest airlineRequest) {
         System.out.println("Received AirlineRequest: " + airlineRequest);
         airlineService.createAirline(airlineRequest);
-        return new ResponseEntity<>(String.format("Airline %s a été créé avec succès",airlineRequest.getName()), HttpStatus.CREATED);
+        return new ResponseEntity<>(String.format("Airline %s a été créé avec succès - %s",airlineRequest.getName(),airlineRequest.getIcaoCode()), HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
     ResponseEntity<String> updateAirline(@PathVariable Long id, @RequestBody @Valid AirlineRequest airlineRequest) {
