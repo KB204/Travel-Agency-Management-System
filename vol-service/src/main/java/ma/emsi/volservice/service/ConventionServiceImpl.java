@@ -1,0 +1,61 @@
+package ma.emsi.volservice.service;
+
+import ma.emsi.volservice.dao.ConventionRepository;
+import ma.emsi.volservice.dao.FlightRepository;
+import ma.emsi.volservice.dto.convention.ConventionRequest;
+import ma.emsi.volservice.dto.convention.ConventionResponse;
+import ma.emsi.volservice.exceptions.ResourceAlreadyExists;
+import ma.emsi.volservice.exceptions.ResourceNotFoundException;
+import ma.emsi.volservice.mapper.ConventionMapper;
+import ma.emsi.volservice.model.Convention;
+import ma.emsi.volservice.model.Flight;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@Transactional
+public class ConventionServiceImpl implements ConventionService {
+    private final ConventionRepository conventionRepository;
+    private final FlightRepository flightRepository;
+    private final ConventionMapper mapper;
+
+    public ConventionServiceImpl(ConventionRepository conventionRepository, FlightRepository flightRepository, ConventionMapper mapper) {
+        this.conventionRepository = conventionRepository;
+        this.flightRepository = flightRepository;
+        this.mapper = mapper;
+    }
+
+    @Override
+    public List<ConventionResponse> getAllConventions() {
+        return conventionRepository.findAll()
+                .stream()
+                .map(mapper::conventionToDtoResponse)
+                .toList();
+    }
+
+    @Override
+    public void createNewConvention(ConventionRequest request) {
+        Flight flight = flightRepository.findByFlightNoIgnoreCase(request.flightNo())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Le vol identifié par %s n'existe pas",request.flightNo())));
+
+        conventionRepository.findByFlight_FlightNo(request.flightNo())
+                .ifPresent(convention -> {
+                    throw new ResourceAlreadyExists("Convention exists déja");
+                });
+
+        Convention convention = mapper.requestDtoToConvention(request);
+        convention.setFlight(flight);
+
+        conventionRepository.save(convention);
+    }
+
+    @Override
+    public ConventionResponse getConventionDetails(String flightNo) {
+        Convention convention = conventionRepository.findByFlight_FlightNo(flightNo)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Le vol identifié par %s n'existe pas",flightNo)));
+
+        return mapper.conventionToDtoResponse(convention);
+    }
+}
