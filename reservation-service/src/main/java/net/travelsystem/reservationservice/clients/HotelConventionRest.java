@@ -17,8 +17,8 @@ public interface HotelConventionRest {
     @GetMapping("/api/conventions/{identifier}/details")
     HotelConvention getHotelConventionDetails(@PathVariable String identifier);
 
-    @CircuitBreaker(name = "hotelService",fallbackMethod = "defaultHotelConvention")
-    @Retry(name = "retryHotelService")
+    @CircuitBreaker(name = "externalService",fallbackMethod = "defaultHotelConvention")
+    @Retry(name = "retryExternalService")
     @GetMapping("/api/conventions/{identifier}/details")
     HotelConvention findHotelConvention(@PathVariable String identifier);
 

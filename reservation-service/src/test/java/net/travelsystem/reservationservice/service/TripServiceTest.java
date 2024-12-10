@@ -3,6 +3,7 @@ package net.travelsystem.reservationservice.service;
 import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.TripRepository;
 import net.travelsystem.reservationservice.dto.external_services.FlightConvention;
+import net.travelsystem.reservationservice.dto.external_services.FlightResponse;
 import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
 import net.travelsystem.reservationservice.dto.trip.TripRequest;
 import net.travelsystem.reservationservice.dto.trip.TripUpdateRequest;
@@ -40,7 +41,7 @@ class TripServiceTest {
     void shouldCreateNewTripWhenConventionsAreUnique() {
         // given
         List<Reservation> reservations = new ArrayList<>();
-        FlightConvention flightConvention = new FlightConvention();
+        FlightConvention flightConvention = new FlightConvention(10, FlightResponse.builder().build());
         HotelConvention hotelConvention = HotelConvention.builder().identifier("test").build();
 
         Trip trip = new Trip(1L,"trip", "new trip",5000.0,"rabat","dubai",5,5,hotelConvention.identifier(),"test2", reservations,hotelConvention,flightConvention);
@@ -71,7 +72,7 @@ class TripServiceTest {
     void shouldNotCreateNewTrip() {
         // given
         List<Reservation> reservations = new ArrayList<>();
-        FlightConvention flightConvention = new FlightConvention();
+        FlightConvention flightConvention = new FlightConvention(10, FlightResponse.builder().build());
         HotelConvention hotelConvention = HotelConvention.builder().identifier("test").build();
 
         Trip trip = new Trip(1L,"trip", "new trip",5000.0,"rabat","dubai",5,5,hotelConvention.identifier(),"test2", reservations,hotelConvention,flightConvention);
@@ -91,7 +92,7 @@ class TripServiceTest {
     void shouldUpdateExistingTrip() {
         // given
         List<Reservation> reservations = new ArrayList<>();
-        FlightConvention flightConvention = new FlightConvention();
+        FlightConvention flightConvention = new FlightConvention(10, FlightResponse.builder().build());
         HotelConvention hotelConvention = HotelConvention.builder().identifier("test").build();
 
         Trip trip = new Trip(1L,"trip", "new trip",5000.0,"rabat","dubai",5,5,hotelConvention.identifier(),"test2", reservations,hotelConvention,flightConvention);
@@ -117,7 +118,7 @@ class TripServiceTest {
     void shouldNotUpdateExistingTrip() {
         // given
         List<Reservation> reservations = new ArrayList<>();
-        FlightConvention flightConvention = new FlightConvention();
+        FlightConvention flightConvention = new FlightConvention(10, FlightResponse.builder().build());
         HotelConvention hotelConvention = HotelConvention.builder().identifier("test").build();
 
         Trip trip = new Trip(1L,"trip", "new trip",5000.0,"rabat","dubai",5,5,hotelConvention.identifier(),"test2", reservations,hotelConvention,flightConvention);

@@ -1,7 +1,9 @@
 package net.travelsystem.reservationservice.service;
 
+import net.travelsystem.reservationservice.clients.FlightConventionRest;
 import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.TripRepository;
+import net.travelsystem.reservationservice.dto.external_services.FlightConvention;
 import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
 import net.travelsystem.reservationservice.dto.trip.TripRequest;
 import net.travelsystem.reservationservice.dto.trip.TripResponse;
@@ -23,11 +25,13 @@ import org.springframework.stereotype.Service;
 public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
     private final HotelConventionRest rest;
+    private final FlightConventionRest flightRest;
     private final TripMapper mapper;
 
-    public TripServiceImpl(TripRepository tripRepository, HotelConventionRest rest, TripMapper mapper) {
+    public TripServiceImpl(TripRepository tripRepository, HotelConventionRest rest, FlightConventionRest flightRest, TripMapper mapper) {
         this.tripRepository = tripRepository;
         this.rest = rest;
+        this.flightRest = flightRest;
         this.mapper = mapper;
     }
 
@@ -44,6 +48,7 @@ public class TripServiceImpl implements TripService {
         return tripRepository.findAll(specification,pageable)
                 .map(trip -> {
                     trip.setHotelConvention(rest.findHotelConvention(trip.getHotelConventionIdentifier()));
+                    trip.setFlightConvention(flightRest.findFlightConvention(trip.getFlightConventionIdentifier()));
                     return mapper.tripToDtoResponse(trip);
                 });
     }
@@ -51,6 +56,7 @@ public class TripServiceImpl implements TripService {
     @Override
     public void createTrip(TripRequest request) {
         HotelConvention hotelConvention = rest.getHotelConventionDetails(request.hotelConventionIdentifier());
+        FlightConvention flightConvention = flightRest.getFlightConventionDetails(request.flightConventionIdentifier());
 
         tripRepository.findByHotelConventionIdentifierOrFlightConventionIdentifier(request.hotelConventionIdentifier(), request.flightConventionIdentifier())
                 .ifPresent(trip -> {
@@ -59,6 +65,7 @@ public class TripServiceImpl implements TripService {
 
         Trip trip = mapper.dtoRequestToTrip(request);
         trip.setHotelConventionIdentifier(hotelConvention.identifier());
+        trip.setFlightConventionIdentifier(flightConvention.flight().flightNo());
         tripRepository.save(trip);
     }
 

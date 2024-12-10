@@ -4,6 +4,7 @@ import ma.emsi.volservice.dao.ConventionRepository;
 import ma.emsi.volservice.dao.FlightRepository;
 import ma.emsi.volservice.dto.convention.ConventionRequest;
 import ma.emsi.volservice.dto.convention.ConventionResponse;
+import ma.emsi.volservice.exceptions.FlightException;
 import ma.emsi.volservice.exceptions.ResourceAlreadyExists;
 import ma.emsi.volservice.exceptions.ResourceNotFoundException;
 import ma.emsi.volservice.mapper.ConventionMapper;
@@ -54,7 +55,7 @@ public class ConventionServiceImpl implements ConventionService {
     @Override
     public ConventionResponse getConventionDetails(String flightNo) {
         Convention convention = conventionRepository.findByFlight_FlightNo(flightNo)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Le vol identifié par %s n'existe pas",flightNo)));
+                .orElseThrow(() -> new FlightException(String.format("Le vol identifié par %s n'existe pas",flightNo)));
 
         return mapper.conventionToDtoResponse(convention);
     }
