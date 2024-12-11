@@ -4,11 +4,12 @@ import jakarta.validation.Valid;
 import ma.emsi.volservice.dto.convention.ConventionRequest;
 import ma.emsi.volservice.dto.convention.ConventionResponse;
 import ma.emsi.volservice.service.ConventionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/flightsConventions")
@@ -21,8 +22,15 @@ public class ConventionController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<ConventionResponse> getAllFlightsConventions() {
-        return service.getAllConventions();
+    Page<ConventionResponse> getAllFlightsConventions(
+            @RequestParam(required = false) Integer nbr,
+            @RequestParam(required = false) String flightNo,
+            @RequestParam(required = false) String origin,
+            @RequestParam(required = false) String destination,
+            @RequestParam(required = false) String depTime,
+            @RequestParam(required = false) String arrivalTime,
+            Pageable pageable) {
+        return service.getAllConventions(nbr, flightNo, origin, destination, depTime, arrivalTime, pageable);
     }
 
     @GetMapping("/{flightNo}/conventionDetails")

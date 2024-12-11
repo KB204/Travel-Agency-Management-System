@@ -2,11 +2,12 @@ package ma.emsi.volservice.service;
 
 import ma.emsi.volservice.dto.convention.ConventionRequest;
 import ma.emsi.volservice.dto.convention.ConventionResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface ConventionService {
-    List<ConventionResponse> getAllConventions();
+    Page<ConventionResponse> getAllConventions(Integer nbr, String flightNo, String origin, String destination, String depTime, String arrivalTime, Pageable pageable);
     void createNewConvention(ConventionRequest request);
     ConventionResponse getConventionDetails(String flightNo);
 }

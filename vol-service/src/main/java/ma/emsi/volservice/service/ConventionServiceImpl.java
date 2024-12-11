@@ -10,10 +10,15 @@ import ma.emsi.volservice.exceptions.ResourceNotFoundException;
 import ma.emsi.volservice.mapper.ConventionMapper;
 import ma.emsi.volservice.model.Convention;
 import ma.emsi.volservice.model.Flight;
+import ma.emsi.volservice.service.specification.ConventionSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @Transactional
@@ -29,11 +34,20 @@ public class ConventionServiceImpl implements ConventionService {
     }
 
     @Override
-    public List<ConventionResponse> getAllConventions() {
-        return conventionRepository.findAll()
-                .stream()
-                .map(mapper::conventionToDtoResponse)
-                .toList();
+    public Page<ConventionResponse> getAllConventions(Integer nbr, String flightNo, String origin, String destination,
+                                                      String depTime, String arrivalTime, Pageable pageable) {
+
+        Specification<Convention> specification = ConventionSpecification.filterWithoutConditions()
+                .and(ConventionSpecification.availablePlacesEqual(nbr))
+                .and(ConventionSpecification.flightNoEqual(flightNo))
+                .and(ConventionSpecification.flightOriginLike(origin))
+                .and(ConventionSpecification.flightDestinationLike(destination))
+                .and(ConventionSpecification.flightDepartureTimeLike(depTime))
+                .and(ConventionSpecification.flightArrivalTimeLike(arrivalTime));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("flight.departureTime").descending());
+
+        return conventionRepository.findAll(specification,pageable)
+                .map(mapper::conventionToDtoResponse);
     }
 
     @Override
