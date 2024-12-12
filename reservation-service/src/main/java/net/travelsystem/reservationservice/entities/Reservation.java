@@ -23,4 +23,6 @@ public class Reservation {
     private LocalDateTime reservationDate;
     @ManyToOne(fetch = FetchType.LAZY)
     private Trip trip;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Client client;
 }
