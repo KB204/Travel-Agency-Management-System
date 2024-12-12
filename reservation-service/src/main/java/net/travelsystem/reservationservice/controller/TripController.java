@@ -31,6 +31,12 @@ public class TripController {
             Pageable pageable) {
         return service.getAllTrips(name, price, destination, identifier, pageable); }
 
+    @GetMapping("/{id}/tripPrice")
+    ResponseEntity<Double> findTripPrice(@PathVariable Long id) {
+        Double tripPrice = service.getTripPrice(id);
+        return new ResponseEntity<>(tripPrice,HttpStatus.OK);
+    }
+
     @PostMapping
     ResponseEntity<String> saveNewTrip(@RequestBody @Valid TripRequest request) {
         service.createTrip(request);

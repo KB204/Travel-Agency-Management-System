@@ -18,9 +18,4 @@ public record PaymentRequest(
         LocalDate expirationDate,
         @NotNull(message = "Le code de la carte est obligatoire")
         @Min(value = 3,message = "Le code n'est pas valide")
-        Integer verificationCode,
-        @NotEmpty(message = "Le devise est obligatoire")
-        String currency,
-        @NotNull(message = "Le montant est obligatoire")
-        @Min(value = 200,message = "Le montant ne peut pas etre inférieur a 200")
-        Double amount) {}
+        Integer verificationCode) {}

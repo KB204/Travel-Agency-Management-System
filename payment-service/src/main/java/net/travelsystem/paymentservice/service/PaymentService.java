@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PaymentService {
     List<PaymentResponse> getAllPayments();
-    void newPayment(PaymentRequest request);
+    void newPayment(Long id,PaymentRequest request);
 }

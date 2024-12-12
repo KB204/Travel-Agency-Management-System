@@ -86,6 +86,14 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
+    public Double getTripPrice(Long id) {
+        Trip trip = tripRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
+
+        return trip.getPrice();
+    }
+
+    @Override
     public void deleteTrip(Long id) {
         Trip trip = tripRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
