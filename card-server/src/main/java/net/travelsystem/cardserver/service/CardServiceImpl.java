@@ -3,10 +3,12 @@ package net.travelsystem.cardserver.service;
 import net.travelsystem.cardserver.dao.CardRepository;
 import net.travelsystem.cardserver.dto.CardRequest;
 import net.travelsystem.cardserver.dto.CardResponse;
+import net.travelsystem.cardserver.dto.PaymentEvent;
 import net.travelsystem.cardserver.entity.Card;
 import net.travelsystem.cardserver.exceptions.ResourceAlreadyExists;
 import net.travelsystem.cardserver.exceptions.ResourceNotFoundException;
 import net.travelsystem.cardserver.mapper.CardMapper;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +39,16 @@ public class CardServiceImpl implements CardService {
                 });
 
         Card card = mapper.requestDtoToCard(request);
+        cardRepository.save(card);
+    }
+
+    @Override
+    @KafkaListener(topics = "${spring.kafka.template.default-topic}",groupId = "${spring.kafka.consumer.group-id}")
+    public void debitCard(PaymentEvent payment) {
+        Card card = cardRepository.findByCardNumber(payment.cardNumber())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Cart numéro %s n'existe pas",payment.cardNumber())));
+
+        card.setBalance(card.getBalance() - payment.amount());
         cardRepository.save(card);
     }
 

@@ -22,12 +22,14 @@ import java.util.UUID;
 @Transactional
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
+    private final NotificationService notificationService;
     private final CardRestClient restClient;
     private final TripRestClient rest;
     private final PaymentMapper mapper;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, CardRestClient restClient, TripRestClient rest, PaymentMapper mapper) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, NotificationService notificationService, CardRestClient restClient, TripRestClient rest, PaymentMapper mapper) {
         this.paymentRepository = paymentRepository;
+        this.notificationService = notificationService;
         this.restClient = restClient;
         this.rest = rest;
         this.mapper = mapper;
@@ -65,6 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         checkRules(payment,request);
         paymentRepository.save(payment);
+        notificationService.debitCardEvent(id, tripPrice, cardResponse.cardNumber());
     }
 
     private void checkRules(Payment payment,PaymentRequest request){
