@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class NotificationServiceImpl implements NotificationService {
     private final KafkaTemplate<String, PaymentEvent> kafkaTemplate;
 
-    @Value("${spring.kafka.template.default-topic}")
+    @Value("${kafka.topic.payment.name}")
     private String paymentTopic;
     private final static Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
