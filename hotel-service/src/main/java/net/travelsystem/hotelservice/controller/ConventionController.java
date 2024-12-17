@@ -14,6 +14,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/conventions")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ConventionController {
     private final ConventionService service;
 
