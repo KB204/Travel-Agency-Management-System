@@ -4,11 +4,12 @@ import jakarta.validation.Valid;
 import net.travelsystem.paymentservice.dto.payment.PaymentRequest;
 import net.travelsystem.paymentservice.dto.payment.PaymentResponse;
 import net.travelsystem.paymentservice.service.PaymentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -21,7 +22,14 @@ public class PaymentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<PaymentResponse> findAllPayments() { return service.getAllPayments(); }
+    Page<PaymentResponse> findAllPayments(
+            @RequestParam(required = false) String identifier,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Double amount,
+            @RequestParam(required = false) String cardNumber,
+            Pageable pageable) {
+        return service.getAllPayments(identifier, date, amount, cardNumber, pageable);
+    }
 
     @PostMapping("/newPayment")
     ResponseEntity<String> saveNewPayment(@RequestParam Long id, @RequestBody @Valid PaymentRequest request) {

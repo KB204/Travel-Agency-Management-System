@@ -11,10 +11,15 @@ import net.travelsystem.paymentservice.entities.Payment;
 import net.travelsystem.paymentservice.enums.PaymentStatus;
 import net.travelsystem.paymentservice.exceptions.PaymentException;
 import net.travelsystem.paymentservice.mapper.PaymentMapper;
+import net.travelsystem.paymentservice.service.specification.PaymentSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,14 +39,20 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<PaymentResponse> getAllPayments() {
-        return paymentRepository.findAll()
-                .stream()
+    public Page<PaymentResponse> getAllPayments(String identifier, String date, Double amount, String cardNumber, Pageable pageable) {
+
+        Specification<Payment> specification = PaymentSpecification.filterWithoutConditions()
+                .and(PaymentSpecification.paymentIdentifierEqual(identifier))
+                .and(PaymentSpecification.paymentDateLike(date))
+                .and(PaymentSpecification.paymentAmountEqual(amount))
+                .and(PaymentSpecification.cardNumberEqual(cardNumber));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdAt").descending());
+
+        return paymentRepository.findAll(specification,pageable)
                 .map(payment -> {
                     payment.setCard(restClient.getCard(payment.getCardNumber()));
                     return mapper.paymentToDtoResponse(payment);
-                })
-                .toList();
+                });
     }
 
     @Override
