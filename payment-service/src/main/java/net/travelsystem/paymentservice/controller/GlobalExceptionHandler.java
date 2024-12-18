@@ -2,7 +2,7 @@ package net.travelsystem.paymentservice.controller;
 
 import feign.FeignException;
 import net.travelsystem.paymentservice.dto.ErrorResponse;
-import net.travelsystem.paymentservice.dto.ResourceAlreadyExists;
+import net.travelsystem.paymentservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.paymentservice.exceptions.PaymentException;
 import net.travelsystem.paymentservice.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;

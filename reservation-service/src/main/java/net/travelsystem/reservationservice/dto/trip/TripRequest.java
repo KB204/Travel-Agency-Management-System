@@ -24,5 +24,6 @@ public record TripRequest(
         @Min(value = 2,message = "La durée ne peut pas être inférieure a 2 Jours")
         Integer duration,
         @NotNull(message = "Le nombre des places disponbiles est obligatoire")
+        @Min(value = 10,message = "Le nombre des places disponibles ne peut pas être inférieur a 10")
         Integer availablePlaces
 ) {}

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class NotificationServiceImpl implements NotificationService {
     private final KafkaTemplate<String, PaymentEvent> kafkaTemplate;
@@ -20,11 +21,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void debitCardEvent(Long TripId,Double amount, String cardNumber) {
-        logger.info("Start - Sending PaymentEvent");
+    public void debitCardEvent(Long tripId,Double amount, String cardNumber) {
+        logger.info("Start - Sending Payment Event");
 
-        kafkaTemplate.send(paymentTopic,new PaymentEvent(TripId, amount, cardNumber));
+        kafkaTemplate.send(paymentTopic, new PaymentEvent(tripId, amount, cardNumber));
 
-        logger.info("End - Sending PaymentEvent");
+        logger.info("End - Sending Payment Event");
     }
 }

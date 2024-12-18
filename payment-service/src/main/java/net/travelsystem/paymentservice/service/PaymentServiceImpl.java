@@ -3,7 +3,7 @@ package net.travelsystem.paymentservice.service;
 import net.travelsystem.paymentservice.clients.CardRestClient;
 import net.travelsystem.paymentservice.clients.TripRestClient;
 import net.travelsystem.paymentservice.dao.PaymentRepository;
-import net.travelsystem.paymentservice.dto.ResourceAlreadyExists;
+import net.travelsystem.paymentservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.paymentservice.dto.card.CardResponse;
 import net.travelsystem.paymentservice.dto.payment.PaymentRequest;
 import net.travelsystem.paymentservice.dto.payment.PaymentResponse;
@@ -56,6 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(tripPrice)
                 .currency(cardResponse.currency())
                 .cardNumber(cardResponse.cardNumber())
+                .tripId(id)
                 .build();
 
         paymentRepository.findByTransactionIdentifier(payment.getTransactionIdentifier())
@@ -65,7 +66,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         checkRules(payment,request);
         paymentRepository.save(payment);
-        notificationService.debitCardEvent(id, tripPrice, cardResponse.cardNumber());
+        notificationService.debitCardEvent(payment.getTripId(), tripPrice, cardResponse.cardNumber());
     }
 
     private void checkRules(Payment payment,PaymentRequest request){

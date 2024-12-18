@@ -9,6 +9,8 @@ import net.travelsystem.cardserver.entity.Card;
 import net.travelsystem.cardserver.exceptions.ResourceAlreadyExists;
 import net.travelsystem.cardserver.exceptions.ResourceNotFoundException;
 import net.travelsystem.cardserver.mapper.CardMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final CardMapper mapper;
+    private final static Logger logger = LoggerFactory.getLogger(CardServiceImpl.class);
 
     public CardServiceImpl(CardRepository cardRepository, CardMapper mapper) {
         this.cardRepository = cardRepository;
@@ -60,6 +63,7 @@ public class CardServiceImpl implements CardService {
 
         card.setBalance(card.getBalance() - payment.amount());
         cardRepository.save(card);
+        logger.info("Consumed Payment Event");
     }
 
     @Override

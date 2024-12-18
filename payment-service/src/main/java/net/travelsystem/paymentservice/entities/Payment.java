@@ -24,6 +24,7 @@ public class Payment {
     private Double amount;
     private String currency;
     private String cardNumber;
+    private Long tripId;
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     @Transient

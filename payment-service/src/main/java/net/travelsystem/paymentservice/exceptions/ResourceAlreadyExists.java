@@ -1,4 +1,4 @@
-package net.travelsystem.paymentservice.dto;
+package net.travelsystem.paymentservice.exceptions;
 
 public class ResourceAlreadyExists extends RuntimeException {
     public ResourceAlreadyExists(String message) {
