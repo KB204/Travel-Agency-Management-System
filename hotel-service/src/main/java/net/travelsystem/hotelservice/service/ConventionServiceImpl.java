@@ -4,6 +4,7 @@ import net.travelsystem.hotelservice.dao.ConventionRepository;
 import net.travelsystem.hotelservice.dao.HotelRepository;
 import net.travelsystem.hotelservice.dto.convention.ConventionRequest;
 import net.travelsystem.hotelservice.dto.convention.ConventionResponse;
+import net.travelsystem.hotelservice.dto.convention.ConventionResponseDTO;
 import net.travelsystem.hotelservice.entities.Convention;
 import net.travelsystem.hotelservice.entities.Hotel;
 import net.travelsystem.hotelservice.entities.Room;
@@ -85,6 +86,14 @@ public class ConventionServiceImpl implements ConventionService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("La convention identifié par %s n'existe pas",identifier)));
 
         return mapper.conventionToDtoResponse(convention);
+    }
+
+    @Override
+    public ConventionResponseDTO getConventionHotelDetails(String identifier) {
+        Convention convention = conventionRepository.findByIdentifierIgnoreCase(identifier)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("La convention identifié par %s n'existe pas",identifier)));
+
+        return mapper.conventionToResponse(convention);
     }
 
     private Integer calculateAvailableRooms(Hotel hotel){

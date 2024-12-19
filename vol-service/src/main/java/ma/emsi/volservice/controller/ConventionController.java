@@ -3,6 +3,7 @@ package ma.emsi.volservice.controller;
 import jakarta.validation.Valid;
 import ma.emsi.volservice.dto.convention.ConventionRequest;
 import ma.emsi.volservice.dto.convention.ConventionResponse;
+import ma.emsi.volservice.dto.convention.ConventionResponseDTO;
 import ma.emsi.volservice.service.ConventionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,12 @@ public class ConventionController {
     ResponseEntity<ConventionResponse> getFlightConventionDetails(@PathVariable String flightNo) {
         ConventionResponse conventionDetails = service.getConventionDetails(flightNo);
         return new ResponseEntity<>(conventionDetails,HttpStatus.OK);
+    }
+
+    @GetMapping("/{flightNo}/flightConventionDetails")
+    ResponseEntity<ConventionResponseDTO> getFlightDetails(@PathVariable String flightNo) {
+        ConventionResponseDTO conventionFlightDetails = service.getConventionFlightDetails(flightNo);
+        return new ResponseEntity<>(conventionFlightDetails,HttpStatus.OK);
     }
 
     @PostMapping

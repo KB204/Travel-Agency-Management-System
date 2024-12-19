@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.travelsystem.reservationservice.dto.external_services.FlightConventionDTO;
+import net.travelsystem.reservationservice.dto.external_services.HotelConventionDTO;
 import net.travelsystem.reservationservice.enums.ReservationStatus;
 
 import java.time.LocalDateTime;
@@ -25,4 +27,8 @@ public class Reservation {
     private Trip trip;
     @ManyToOne(fetch = FetchType.LAZY)
     private Client client;
+    @Transient
+    private HotelConventionDTO hotelConvention;
+    @Transient
+    private FlightConventionDTO flightConvention;
 }

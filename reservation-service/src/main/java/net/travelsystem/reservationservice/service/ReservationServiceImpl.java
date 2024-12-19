@@ -1,6 +1,8 @@
 package net.travelsystem.reservationservice.service;
 
 import net.travelsystem.paymentservice.dto.event.PaymentEvent;
+import net.travelsystem.reservationservice.clients.FlightConventionRest;
+import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.ClientRepository;
 import net.travelsystem.reservationservice.dao.ReservationRepository;
 import net.travelsystem.reservationservice.dao.TripRepository;
@@ -32,14 +34,18 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final TripRepository tripRepository;
     private final ClientRepository clientRepository;
+    private final HotelConventionRest hotelConventionRest;
+    private final FlightConventionRest flightConventionRest;
     private final ReservationMapper mapper;
 
     private final static Logger logger = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository, TripRepository tripRepository, ClientRepository clientRepository, ReservationMapper mapper) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, TripRepository tripRepository, ClientRepository clientRepository, HotelConventionRest hotelConventionRest, FlightConventionRest flightConventionRest, ReservationMapper mapper) {
         this.reservationRepository = reservationRepository;
         this.tripRepository = tripRepository;
         this.clientRepository = clientRepository;
+        this.hotelConventionRest = hotelConventionRest;
+        this.flightConventionRest = flightConventionRest;
         this.mapper = mapper;
     }
 
@@ -47,7 +53,11 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationResponse> getAllReservations() {
         return reservationRepository.findAll()
                 .stream()
-                .map(mapper::reservationToDtoResponse)
+                .map(reservation -> {
+                    reservation.setHotelConvention(hotelConventionRest.findHotel(reservation.getTrip().getHotelConventionIdentifier()));
+                    reservation.setFlightConvention(flightConventionRest.findFlight(reservation.getTrip().getFlightConventionIdentifier()));
+                    return mapper.reservationToDtoResponse(reservation);
+                })
                 .toList();
     }
 

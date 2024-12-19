@@ -3,6 +3,7 @@ package net.travelsystem.hotelservice.controller;
 import jakarta.validation.Valid;
 import net.travelsystem.hotelservice.dto.convention.ConventionRequest;
 import net.travelsystem.hotelservice.dto.convention.ConventionResponse;
+import net.travelsystem.hotelservice.dto.convention.ConventionResponseDTO;
 import net.travelsystem.hotelservice.service.ConventionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,11 @@ public class ConventionController {
         return new ResponseEntity<>(conventionDetails,HttpStatus.OK);
     }
 
+    @GetMapping("/{identifier}/hotelConventionDetails")
+    ResponseEntity<ConventionResponseDTO> findHotelConventionByIdentifier(@PathVariable String identifier) {
+        ConventionResponseDTO conventionHotelDetails = service.getConventionHotelDetails(identifier);
+        return new ResponseEntity<>(conventionHotelDetails,HttpStatus.OK);
+    }
     @PostMapping
     ResponseEntity<String> saveNewHotelConvention(@RequestBody @Valid ConventionRequest request){
         service.createHotelConvention(request);
