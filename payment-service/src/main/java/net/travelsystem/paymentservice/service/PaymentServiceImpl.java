@@ -1,7 +1,7 @@
 package net.travelsystem.paymentservice.service;
 
 import net.travelsystem.paymentservice.clients.CardRestClient;
-import net.travelsystem.paymentservice.clients.TripRestClient;
+import net.travelsystem.paymentservice.clients.ReservationRestClient;
 import net.travelsystem.paymentservice.dao.PaymentRepository;
 import net.travelsystem.paymentservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.paymentservice.dto.card.CardResponse;
@@ -27,10 +27,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final NotificationService notificationService;
     private final CardRestClient restClient;
-    private final TripRestClient rest;
+    private final ReservationRestClient rest;
     private final PaymentMapper mapper;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, NotificationService notificationService, CardRestClient restClient, TripRestClient rest, PaymentMapper mapper) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, NotificationService notificationService, CardRestClient restClient, ReservationRestClient rest, PaymentMapper mapper) {
         this.paymentRepository = paymentRepository;
         this.notificationService = notificationService;
         this.restClient = restClient;
@@ -56,9 +56,9 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void newPayment(Long id, PaymentRequest request) {
+    public void newPayment(String reservationIdentifier, PaymentRequest request) {
         CardResponse cardResponse = restClient.findCardByNumber(request.cardNumber());
-        Double tripPrice = rest.getTripPrice(id);
+        Double tripPrice = rest.getReservationTotalAmount(reservationIdentifier);
 
         Payment payment = Payment.builder()
                 .transactionIdentifier(UUID.randomUUID().toString().substring(0,12))
@@ -67,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(tripPrice)
                 .currency(cardResponse.currency())
                 .cardNumber(cardResponse.cardNumber())
-                .tripId(id)
+                .reservationIdentifier(reservationIdentifier)
                 .build();
 
         paymentRepository.findByTransactionIdentifier(payment.getTransactionIdentifier())
@@ -77,7 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         checkRules(payment,request);
         paymentRepository.save(payment);
-        notificationService.debitCardEvent(payment.getTripId(), tripPrice, cardResponse.cardNumber());
+        notificationService.debitCardEvent(payment.getReservationIdentifier(), payment.getAmount(), cardResponse.cardNumber());
     }
 
     private void checkRules(Payment payment,PaymentRequest request){

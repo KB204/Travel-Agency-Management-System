@@ -1,3 +1,3 @@
 package net.travelsystem.paymentservice.dto.event;
 
-public record PaymentEvent(Long tripId,Double amount,String cardNumber) {}
+public record PaymentEvent(String reservationIdentifier,Double amount,String cardNumber) {}

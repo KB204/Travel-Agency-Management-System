@@ -1,6 +1,5 @@
 package net.travelsystem.reservationservice.service;
 
-import net.travelsystem.paymentservice.dto.event.PaymentEvent;
 import net.travelsystem.reservationservice.clients.FlightConventionRest;
 import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.TripRepository;
@@ -14,14 +13,11 @@ import net.travelsystem.reservationservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.reservationservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.reservationservice.mapper.TripMapper;
 import net.travelsystem.reservationservice.service.specification.TripSpecification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 
@@ -31,8 +27,6 @@ public class TripServiceImpl implements TripService {
     private final HotelConventionRest rest;
     private final FlightConventionRest flightRest;
     private final TripMapper mapper;
-
-    private final static Logger logger = LoggerFactory.getLogger(TripServiceImpl.class);
 
     public TripServiceImpl(TripRepository tripRepository, HotelConventionRest rest, FlightConventionRest flightRest, TripMapper mapper) {
         this.tripRepository = tripRepository;
@@ -89,25 +83,6 @@ public class TripServiceImpl implements TripService {
         trip.setAvailablePlaces(request.availablePlaces());
 
         tripRepository.save(trip);
-    }
-
-    @Override
-    @KafkaListener(topics = "${kafka.topic.payment.name}",groupId = "${spring.kafka.consumer.group-id}")
-    public void updateReservedTrip(PaymentEvent paymentEvent) {
-        Trip trip = tripRepository.findById(paymentEvent.tripId())
-                .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
-
-        trip.setAvailablePlaces(trip.getAvailablePlaces() - 1);
-        tripRepository.save(trip);
-        logger.info("Consumed Payment Event");
-    }
-
-    @Override
-    public Double getTripPrice(Long id) {
-        Trip trip = tripRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
-
-        return trip.getPrice();
     }
 
     @Override

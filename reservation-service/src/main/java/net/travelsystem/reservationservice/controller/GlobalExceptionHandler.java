@@ -2,6 +2,7 @@ package net.travelsystem.reservationservice.controller;
 
 import feign.FeignException;
 import net.travelsystem.reservationservice.dto.ErrorResponse;
+import net.travelsystem.reservationservice.exceptions.ReservationException;
 import net.travelsystem.reservationservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.reservationservice.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse("Erreurs fonctionnelles", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ReservationException.class)
+    final ResponseEntity<Object> handleReservationException(ReservationException ex) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Erreurs fonctionnelles",details);
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(FeignException.class)
     final ResponseEntity<Object> handleFeignException(FeignException ex) {

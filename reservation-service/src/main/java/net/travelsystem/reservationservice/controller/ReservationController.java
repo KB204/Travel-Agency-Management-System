@@ -1,0 +1,39 @@
+package net.travelsystem.reservationservice.controller;
+
+import jakarta.validation.Valid;
+import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
+import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
+import net.travelsystem.reservationservice.service.ReservationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static java.lang.String.format;
+
+@RestController
+@RequestMapping("/api/reservations")
+public class ReservationController {
+    private final ReservationService service;
+
+    public ReservationController(ReservationService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    List<ReservationResponse> findAllReservations() { return service.getAllReservations(); }
+
+    @GetMapping("/{identifier}/reservation/totalPrice")
+    ResponseEntity<Double> findReservationDetails(@PathVariable String identifier) {
+        Double reservationTotalAmount = service.reservationTotalAmount(identifier);
+        return new ResponseEntity<>(reservationTotalAmount,HttpStatus.OK);
+    }
+
+    @PostMapping("/newReservation")
+    ResponseEntity<String> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ReservationRequest request) {
+        service.createNewReservation(tripId, request);
+        return new ResponseEntity<>(format("La reservation pour le client identifié par %s est en cours",request.identity()),HttpStatus.CREATED);
+    }
+}

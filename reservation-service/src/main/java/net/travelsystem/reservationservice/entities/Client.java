@@ -22,6 +22,7 @@ public class Client {
     private String lastName;
     private String email;
     private String phoneNumber;
+    private Integer nbrTickets;
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
 }

@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface PaymentService {
     Page<PaymentResponse> getAllPayments(String identifier, String date, Double amount, String cardNumber, Pageable pageable);
-    void newPayment(Long id,PaymentRequest request);
+    void newPayment(String reservationIdentifier,PaymentRequest request);
 }

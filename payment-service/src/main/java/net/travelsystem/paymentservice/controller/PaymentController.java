@@ -32,8 +32,8 @@ public class PaymentController {
     }
 
     @PostMapping("/newPayment")
-    ResponseEntity<String> saveNewPayment(@RequestParam Long id, @RequestBody @Valid PaymentRequest request) {
-        service.newPayment(id, request);
+    ResponseEntity<String> saveNewPayment(@RequestParam String reservationIdentifier, @RequestBody @Valid PaymentRequest request) {
+        service.newPayment(reservationIdentifier, request);
         return new ResponseEntity<>("Paiment a été effectué avec succès",HttpStatus.CREATED);
     }
 }

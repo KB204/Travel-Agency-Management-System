@@ -21,10 +21,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void debitCardEvent(Long tripId,Double amount, String cardNumber) {
+    public void debitCardEvent(String reservationIdentifier,Double amount, String cardNumber) {
         logger.info("Start - Sending Payment Event");
 
-        kafkaTemplate.send(paymentTopic, new PaymentEvent(tripId, amount, cardNumber));
+        kafkaTemplate.send(paymentTopic, new PaymentEvent(reservationIdentifier, amount, cardNumber));
 
         logger.info("End - Sending Payment Event");
     }
