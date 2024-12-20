@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class NotificationServiceImpl implements NotificationService {
+public class KafkaNotificationService implements NotificationService {
     private final KafkaTemplate<String, PaymentEvent> kafkaTemplate;
 
     @Value("${kafka.topic.payment.name}")
     private String paymentTopic;
-    private final static Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(KafkaNotificationService.class);
 
-    public NotificationServiceImpl(KafkaTemplate<String, PaymentEvent> kafkaTemplate) {
+    public KafkaNotificationService(KafkaTemplate<String, PaymentEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

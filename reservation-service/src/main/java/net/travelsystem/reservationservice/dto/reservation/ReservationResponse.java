@@ -12,6 +12,8 @@ public record ReservationResponse(
         String identifier,
         ReservationStatus status,
         LocalDateTime reservationDate,
+        LocalDateTime updatedAt,
+        Double totalPrice,
         ClientResponseDTO client,
         TripResponseDTO trip,
         HotelConventionDTO hotelConvention,

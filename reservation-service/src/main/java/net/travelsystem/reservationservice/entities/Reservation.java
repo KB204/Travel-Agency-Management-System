@@ -9,6 +9,7 @@ import net.travelsystem.reservationservice.dto.external_services.FlightConventio
 import net.travelsystem.reservationservice.dto.external_services.HotelConventionDTO;
 import net.travelsystem.reservationservice.enums.ReservationStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +24,13 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
     private LocalDateTime reservationDate;
+    private LocalDateTime updatedAt;
+    private Double totalPrice;
+    private LocalDateTime flightDepartureTime;
+    private String departureLocation;
+    private LocalDate returnDate;
+    private String hotelName;
+    private String airlineName;
     @ManyToOne(fetch = FetchType.LAZY)
     private Trip trip;
     @ManyToOne(fetch = FetchType.LAZY)

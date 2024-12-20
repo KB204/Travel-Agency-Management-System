@@ -6,8 +6,11 @@ import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.ClientRepository;
 import net.travelsystem.reservationservice.dao.ReservationRepository;
 import net.travelsystem.reservationservice.dao.TripRepository;
+import net.travelsystem.reservationservice.dto.external_services.FlightConvention;
+import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
 import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
+import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
 import net.travelsystem.reservationservice.entities.Client;
 import net.travelsystem.reservationservice.entities.Reservation;
 import net.travelsystem.reservationservice.entities.Trip;
@@ -36,16 +39,18 @@ public class ReservationServiceImpl implements ReservationService {
     private final ClientRepository clientRepository;
     private final HotelConventionRest hotelConventionRest;
     private final FlightConventionRest flightConventionRest;
+    private final NotificationService notificationService;
     private final ReservationMapper mapper;
 
     private final static Logger logger = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository, TripRepository tripRepository, ClientRepository clientRepository, HotelConventionRest hotelConventionRest, FlightConventionRest flightConventionRest, ReservationMapper mapper) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, TripRepository tripRepository, ClientRepository clientRepository, HotelConventionRest hotelConventionRest, FlightConventionRest flightConventionRest, NotificationService notificationService, ReservationMapper mapper) {
         this.reservationRepository = reservationRepository;
         this.tripRepository = tripRepository;
         this.clientRepository = clientRepository;
         this.hotelConventionRest = hotelConventionRest;
         this.flightConventionRest = flightConventionRest;
+        this.notificationService = notificationService;
         this.mapper = mapper;
     }
 
@@ -66,6 +71,9 @@ public class ReservationServiceImpl implements ReservationService {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Voyage n'existe pas"));
 
+        HotelConvention convention = hotelConventionRest.findHotelConvention(trip.getHotelConventionIdentifier());
+        FlightConvention convention2 = flightConventionRest.findFlightConvention(trip.getFlightConventionIdentifier());
+
         if (request.nbrTickets() > trip.getAvailablePlaces())
             throw new ReservationException("Ce voyage n'a pas de places disponibles");
 
@@ -75,6 +83,11 @@ public class ReservationServiceImpl implements ReservationService {
                 .identifier(UUID.randomUUID().toString().substring(0,10))
                 .reservationDate(LocalDateTime.now())
                 .status(ReservationStatus.PENDING)
+                .hotelName(convention.hotel().name())
+                .returnDate(convention.checkOutDate())
+                .flightDepartureTime(convention2.flight().departureTime())
+                .departureLocation(convention2.flight().origin())
+                .airlineName(convention2.flight().airline().name())
                 .trip(trip)
                 .client(client)
                 .build();
@@ -98,11 +111,24 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
 
         reservation.setStatus(ReservationStatus.APPROVED);
+        reservation.setTotalPrice(event.amount());
         trip.setAvailablePlaces(trip.getAvailablePlaces() - reservation.getClient().getNbrTickets());
 
         reservationRepository.save(reservation);
         tripRepository.save(trip);
         logger.info("Consumed Payment Event");
+        notificationService.reservationNotification(reservation.getIdentifier());
+    }
+
+    @Override
+    public void updateReservation(String identifier, UpdateReservationRequest request) {
+        Reservation reservation = reservationRepository.findByIdentifierIgnoreCase(identifier)
+                .orElseThrow(() -> new ResourceNotFoundException(format("La réservation numéro %s n'existe pas",identifier)));
+
+        reservation.setStatus(request.status());
+        reservation.setUpdatedAt(LocalDateTime.now());
+
+        reservationRepository.save(reservation);
     }
 
     @Override

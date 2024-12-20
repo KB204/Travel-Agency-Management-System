@@ -3,6 +3,7 @@ package net.travelsystem.reservationservice.controller;
 import jakarta.validation.Valid;
 import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
+import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
 import net.travelsystem.reservationservice.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +36,11 @@ public class ReservationController {
     ResponseEntity<String> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ReservationRequest request) {
         service.createNewReservation(tripId, request);
         return new ResponseEntity<>(format("La reservation pour le client identifié par %s est en cours",request.identity()),HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{identifier}/reservation/updateStatus")
+    ResponseEntity<String> editReservationStatus(@PathVariable String identifier, @RequestBody @Valid UpdateReservationRequest request) {
+        service.updateReservation(identifier, request);
+        return new ResponseEntity<>(format("La reservation numéro %s a été modifiée avec succès",identifier),HttpStatus.ACCEPTED);
     }
 }
