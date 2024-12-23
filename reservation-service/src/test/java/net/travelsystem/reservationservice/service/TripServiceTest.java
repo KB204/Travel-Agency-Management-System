@@ -45,7 +45,7 @@ class TripServiceTest {
         HotelConvention hotelConvention = HotelConvention.builder().identifier("test").build();
 
         Trip trip = new Trip(1L,"trip", "new trip",5000.0,"rabat","dubai",5,5,hotelConvention.identifier(),"test2", reservations,hotelConvention,flightConvention);
-        TripRequest request = new TripRequest(hotelConvention.identifier(),"test2","trip", "new trip",5000.0,"rabat","dubai",5,5 );
+        TripRequest request = new TripRequest(hotelConvention.identifier(),"test2","trip", "new trip",5000.0,"rabat","dubai",5,10 );
 
         // when
         when(rest.getHotelConventionDetails(request.hotelConventionIdentifier())).thenReturn(hotelConvention);
@@ -76,7 +76,7 @@ class TripServiceTest {
         HotelConvention hotelConvention = HotelConvention.builder().identifier("test").build();
 
         Trip trip = new Trip(1L,"trip", "new trip",5000.0,"rabat","dubai",5,5,hotelConvention.identifier(),"test2", reservations,hotelConvention,flightConvention);
-        TripRequest request = new TripRequest(hotelConvention.identifier(),"test2","trip", "new trip",5000.0,"rabat","dubai",5,5 );
+        TripRequest request = new TripRequest(hotelConvention.identifier(),"test2","trip", "new trip",5000.0,"rabat","dubai",5,10 );
 
         // when
         when(repository.findByHotelConventionIdentifierOrFlightConventionIdentifier(request.hotelConventionIdentifier(),
