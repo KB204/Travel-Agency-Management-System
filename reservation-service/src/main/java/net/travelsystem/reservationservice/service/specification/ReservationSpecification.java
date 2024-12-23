@@ -22,7 +22,7 @@ public class ReservationSpecification {
         return (root, query, criteriaBuilder) ->
                 Optional.ofNullable(status)
                         .map(reservation -> criteriaBuilder.equal(criteriaBuilder.lower(root.get("status")),
-                                "%" + status + "%"))
+                                status.toLowerCase()))
                         .orElse(criteriaBuilder.conjunction());
     }
 
@@ -38,6 +38,29 @@ public class ReservationSpecification {
                 Optional.ofNullable(date)
                         .map(reservation -> criteriaBuilder.like(criteriaBuilder.function("TO_CHAR", String.class,
                                 root.get("reservationDate"), criteriaBuilder.literal("YYYY-MM-DD")), date + "%"))
+                        .orElse(criteriaBuilder.conjunction());
+    }
+
+    public static Specification<Reservation> clientIdentityEqual(String identity) {
+        return (root, query, criteriaBuilder) ->
+                Optional.ofNullable(identity)
+                        .map(client -> criteriaBuilder.equal(root.get("client").get("identity"),identity))
+                        .orElse(criteriaBuilder.conjunction());
+    }
+
+    public static Specification<Reservation> clientFirstNameLike(String firstName) {
+        return (root, query, criteriaBuilder) ->
+                Optional.ofNullable(firstName)
+                        .map(client -> criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("firstName")),
+                                "%" + firstName.toLowerCase() + "%"))
+                        .orElse(criteriaBuilder.conjunction());
+    }
+
+    public static Specification<Reservation> clientLastNameLike(String lastName) {
+        return (root, query, criteriaBuilder) ->
+                Optional.ofNullable(lastName)
+                        .map(client -> criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("lastName")),
+                                "%" + lastName.toLowerCase() + "%"))
                         .orElse(criteriaBuilder.conjunction());
     }
 }

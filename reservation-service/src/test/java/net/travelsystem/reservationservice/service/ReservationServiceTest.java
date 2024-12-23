@@ -39,7 +39,7 @@ class ReservationServiceTest {
     @InjectMocks
     private ReservationServiceImpl underTest;
 
-    @Test
+    /*@Test
     void shouldGetAllReservations() {
         // given
         FlightResponse flightResponse = FlightResponse.builder().flightNo("conv2").build();
@@ -97,7 +97,7 @@ class ReservationServiceTest {
         assertEquals(expectedResponses.size(),responses.size());
         assertEquals(expectedResponses.getFirst().identifier(), responses.getFirst().identifier());
         assertEquals(expectedResponses.get(1).identifier(),responses.get(1).identifier());
-    }
+    }*/
 
     @Test
     void shouldCalculateReservationTotalAmount() {

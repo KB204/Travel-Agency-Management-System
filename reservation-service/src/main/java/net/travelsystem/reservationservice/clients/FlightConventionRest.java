@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 
-@FeignClient(url = "http://localhost:8085",name = "vol-service",configuration = FeignConfig.class)
+@FeignClient(value = "VOL-SERVICE",configuration = FeignConfig.class)
 public interface FlightConventionRest {
 
     @GetMapping("/api/flightsConventions/{flightNo}/conventionDetails")

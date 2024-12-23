@@ -19,14 +19,19 @@ import net.travelsystem.reservationservice.exceptions.ReservationException;
 import net.travelsystem.reservationservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.reservationservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.reservationservice.mapper.ReservationMapper;
+import net.travelsystem.reservationservice.service.specification.ReservationSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -55,15 +60,25 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationResponse> getAllReservations() {
-        return reservationRepository.findAll()
-                .stream()
+    public Page<ReservationResponse> getAllReservations(String identifier, String status, Double amount, String date, String identity,
+                                                        String lastname, String firstname, Pageable pageable) {
+
+        Specification<Reservation> specification = ReservationSpecification.filterWithoutConditions()
+                .and(ReservationSpecification.identifierEqual(identifier))
+                .and(ReservationSpecification.statusEqual(status))
+                .and(ReservationSpecification.amountEqual(amount))
+                .and(ReservationSpecification.reservationDateLike(date))
+                .and(ReservationSpecification.clientIdentityEqual(identity))
+                .and(ReservationSpecification.clientFirstNameLike(firstname))
+                .and(ReservationSpecification.clientLastNameLike(lastname));
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("reservationDate").descending());
+
+        return reservationRepository.findAll(specification,pageable)
                 .map(reservation -> {
                     reservation.setHotelConvention(hotelConventionRest.findHotel(reservation.getTrip().getHotelConventionIdentifier()));
                     reservation.setFlightConvention(flightConventionRest.findFlight(reservation.getTrip().getFlightConventionIdentifier()));
                     return mapper.reservationToDtoResponse(reservation);
-                })
-                .toList();
+                });
     }
 
     @Override
@@ -111,6 +126,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
 
         reservation.setStatus(ReservationStatus.APPROVED);
+        reservation.setUpdatedAt(LocalDateTime.now());
         reservation.setTotalPrice(event.amount());
         trip.setAvailablePlaces(trip.getAvailablePlaces() - reservation.getClient().getNbrTickets());
 

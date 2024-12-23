@@ -5,11 +5,12 @@ import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
 import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
 import net.travelsystem.reservationservice.service.ReservationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 import static java.lang.String.format;
 
@@ -24,7 +25,16 @@ public class ReservationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<ReservationResponse> findAllReservations() { return service.getAllReservations(); }
+    Page<ReservationResponse> findAllReservations(
+            @RequestParam(required = false) String identifier,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Double amount,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String identity,
+            @RequestParam(required = false) String lastname,
+            @RequestParam(required = false) String firstname,
+            Pageable pageable) {
+        return service.getAllReservations(identifier, status, amount, date, identity, lastname, firstname, pageable); }
 
     @GetMapping("/{identifier}/reservation/totalPrice")
     ResponseEntity<Double> findReservationDetails(@PathVariable String identifier) {
