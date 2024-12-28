@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/trips")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TripController {
     private final TripService service;
 

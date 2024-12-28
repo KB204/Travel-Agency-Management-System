@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/flightsConventions")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ConventionController {
     private final ConventionService service;
 
