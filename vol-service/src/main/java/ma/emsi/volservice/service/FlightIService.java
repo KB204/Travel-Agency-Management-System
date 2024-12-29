@@ -2,10 +2,11 @@ package ma.emsi.volservice.service;
 
 import ma.emsi.volservice.dto.flight.FlightRequest;
 import ma.emsi.volservice.dto.flight.FlightResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface FlightIService {
-    List<FlightResponse> getAllFlights();
+    Page<FlightResponse> getAllFlights(String flightNo, String type, String origin, String destination, String airline, String depDate, Pageable pageable);
     void addFlight(FlightRequest flightRequest);
 }

@@ -13,12 +13,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 @EnableFeignClients
 public class ReservationServiceApplication {
-
+	private static final Logger log = LoggerFactory.getLogger(ReservationServiceApplication.class);
 	public static void main(String[] args) {
 		SpringApplication.run(ReservationServiceApplication.class, args);
 	}
-
-	private final Logger log = LoggerFactory.getLogger(ReservationServiceApplication.class);
 	@Bean
 	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

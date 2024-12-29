@@ -10,11 +10,16 @@ import ma.emsi.volservice.exceptions.ResourceNotFoundException;
 import ma.emsi.volservice.mapper.FlightMapper;
 import ma.emsi.volservice.model.Airline;
 import ma.emsi.volservice.model.Flight;
+import ma.emsi.volservice.service.specification.FlightSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,11 +36,19 @@ public class FlightIServiceImpl implements FlightIService {
     }
 
     @Override
-    public List<FlightResponse> getAllFlights() {
-        return flightRepository.findAll()
-                .stream()
-                .map(mapper::flightToDtoResponse)
-                .toList();
+    public Page<FlightResponse> getAllFlights(String flightNo, String type, String origin, String destination, String airline, String depDate, Pageable pageable) {
+
+        Specification<Flight> specification = FlightSpecification.filterWithoutConditions()
+                .and(FlightSpecification.flightNoEqual(flightNo))
+                .and(FlightSpecification.flightTypeEqual(type))
+                .and(FlightSpecification.flightOriginLike(origin))
+                .and(FlightSpecification.flightDestinationLike(destination))
+                .and(FlightSpecification.flightAirlineLike(airline))
+                .and(FlightSpecification.flightDepartureTimeLike(depDate));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("departureTime").descending());
+
+        return flightRepository.findAll(specification,pageable)
+                .map(mapper::flightToDtoResponse);
     }
 
     @Override

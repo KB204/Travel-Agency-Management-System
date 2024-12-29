@@ -4,11 +4,12 @@ import jakarta.validation.Valid;
 import ma.emsi.volservice.dto.airline.AirlineRequest;
 import ma.emsi.volservice.dto.airline.AirlineResponse;
 import ma.emsi.volservice.service.AirlineIService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/airlines")
@@ -22,8 +23,12 @@ public class AirlineController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<AirlineResponse> getAllAirlines() {
-       return airlineService.getAllAirline();
+    Page<AirlineResponse> getAllAirlines(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) Integer max,
+            Pageable pageable) {
+       return airlineService.getAllAirline(name, code, max, pageable);
     }
 
     @PostMapping

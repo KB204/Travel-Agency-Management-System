@@ -7,9 +7,14 @@ import ma.emsi.volservice.exceptions.ResourceAlreadyExists;
 import ma.emsi.volservice.exceptions.ResourceNotFoundException;
 import ma.emsi.volservice.mapper.AirlineMapper;
 import ma.emsi.volservice.model.Airline;
+import ma.emsi.volservice.service.specification.AirlineSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class AirlineIServiceImpl implements AirlineIService {
@@ -23,11 +28,16 @@ public class AirlineIServiceImpl implements AirlineIService {
 
 
     @Override
-    public List<AirlineResponse> getAllAirline() {
-        return airlineRepository.findAll()
-                .stream()
-                .map(mapper::airlineToDtoResponse)
-                .toList();
+    public Page<AirlineResponse> getAllAirline(String name, String code, Integer max, Pageable pageable) {
+
+        Specification<Airline> specification = AirlineSpecification.filterWithoutConditions()
+                .and(AirlineSpecification.airlineNameLike(name))
+                .and(AirlineSpecification.airlineCodeEqual(code))
+                .and(AirlineSpecification.airlineCapacityEqual(max));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("name").ascending());
+
+        return airlineRepository.findAll(specification,pageable)
+                .map(mapper::airlineToDtoResponse);
     }
 
     @Override
