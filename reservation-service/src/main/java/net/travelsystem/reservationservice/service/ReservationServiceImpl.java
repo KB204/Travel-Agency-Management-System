@@ -112,6 +112,9 @@ public class ReservationServiceImpl implements ReservationService {
                     throw new ResourceAlreadyExists("Reservation exists déja");
                 });
 
+        Double total = reservationTotalAmount(reservation.getIdentifier());
+        reservation.setTotalPrice(total);
+
         reservationRepository.save(reservation);
         clientRepository.save(client);
     }
