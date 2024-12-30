@@ -6,10 +6,12 @@ import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.ClientRepository;
 import net.travelsystem.reservationservice.dao.ReservationRepository;
 import net.travelsystem.reservationservice.dao.TripRepository;
+import net.travelsystem.reservationservice.dto.client.ClientResponseDetails;
 import net.travelsystem.reservationservice.dto.external_services.FlightConvention;
 import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
 import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
+import net.travelsystem.reservationservice.dto.reservation.ReservationResponseDTO;
 import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
 import net.travelsystem.reservationservice.entities.Client;
 import net.travelsystem.reservationservice.entities.Reservation;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -148,6 +151,28 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setUpdatedAt(LocalDateTime.now());
 
         reservationRepository.save(reservation);
+    }
+
+    @Override
+    public ClientResponseDetails getClientReservations(String identity, String status, Double amount, String date, Pageable pageable) {
+        Client client = clientRepository.findByIdentity(identity)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(format("Client identifié par %s n'existe pas",identity)));
+
+        Specification<Reservation> specification = Specification.where(ReservationSpecification.clientIdentityEqual(client.getIdentity()))
+                .and(ReservationSpecification.statusEqual(status))
+                .and(ReservationSpecification.amountEqual(amount))
+                .and(ReservationSpecification.reservationDateLike(date));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("reservationDate").descending());
+
+        Page<Reservation> reservations = reservationRepository.findAll(specification,pageable);
+        List<ReservationResponseDTO> responseDTO = reservations
+                .stream()
+                .map(mapper::reservationToDtoDetails)
+                .toList();
+
+        return new ClientResponseDetails(client.getIdentity(), client.getFirstName(), client.getLastName(), responseDTO);
     }
 
     @Override

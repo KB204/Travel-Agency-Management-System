@@ -1,6 +1,7 @@
 package net.travelsystem.reservationservice.controller;
 
 import jakarta.validation.Valid;
+import net.travelsystem.reservationservice.dto.client.ClientResponseDetails;
 import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
 import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
@@ -41,6 +42,18 @@ public class ReservationController {
     ResponseEntity<Double> findReservationDetails(@PathVariable String identifier) {
         Double reservationTotalAmount = service.reservationTotalAmount(identifier);
         return new ResponseEntity<>(reservationTotalAmount,HttpStatus.OK);
+    }
+
+    @GetMapping("/{identity}/client/reservationsDetails")
+    ResponseEntity<ClientResponseDetails> findAllClientReservations(
+            @PathVariable String identity,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Double amount,
+            @RequestParam(required = false) String date,
+            Pageable pageable) {
+
+        ClientResponseDetails clientReservations = service.getClientReservations(identity, status, amount, date, pageable);
+        return new ResponseEntity<>(clientReservations,HttpStatus.OK);
     }
 
     @PostMapping("/newReservation")

@@ -1,6 +1,7 @@
 package net.travelsystem.reservationservice.service;
 
 import net.travelsystem.paymentservice.dto.event.PaymentEvent;
+import net.travelsystem.reservationservice.dto.client.ClientResponseDetails;
 import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
 import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
@@ -13,5 +14,6 @@ public interface ReservationService {
     void createNewReservation(Long tripId, ReservationRequest request);
     void completeReservation(PaymentEvent event);
     void updateReservation(String identifier, UpdateReservationRequest request);
+    ClientResponseDetails getClientReservations(String identity, String status, Double amount, String date, Pageable pageable);
     Double reservationTotalAmount(String identifier);
 }
