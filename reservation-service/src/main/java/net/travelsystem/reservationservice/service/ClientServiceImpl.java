@@ -6,10 +6,10 @@ import net.travelsystem.reservationservice.entities.Client;
 import net.travelsystem.reservationservice.enums.ReservationStatus;
 import net.travelsystem.reservationservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.reservationservice.mapper.ClientMapper;
-import net.travelsystem.reservationservice.service.specification.ClientSpecification;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -26,16 +26,17 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<ClientResponse> getAllCustomers() {
-        Specification<Client> specification = ClientSpecification.filterClients();
-
-        return clientRepository.findAll(specification)
+        return clientRepository.findAll()
                 .stream()
+                .distinct()
+                .sorted(Comparator.comparing(client -> client.getFirstName().toLowerCase()))
                 .map(mapper::clientToDtoResponse)
                 .toList();
     }
 
     @Override
-    public Long calculateClientReservations(String identity) {
+    @Transactional
+    public long calculateClientReservations(String identity) {
         Client client = clientRepository.findByIdentity(identity)
                 .stream()
                 .findFirst()

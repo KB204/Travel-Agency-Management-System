@@ -2,7 +2,7 @@ package net.travelsystem.reservationservice.controller;
 
 import jakarta.validation.Valid;
 import net.travelsystem.reservationservice.dto.client.ClientResponseDetails;
-import net.travelsystem.reservationservice.dto.reservation.ReservationRequest;
+import net.travelsystem.reservationservice.dto.reservation.ClientReservationRequest;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
 import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
 import net.travelsystem.reservationservice.service.ReservationService;
@@ -57,7 +57,7 @@ public class ReservationController {
     }
 
     @PostMapping("/newReservation")
-    ResponseEntity<String> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ReservationRequest request) {
+    ResponseEntity<String> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ClientReservationRequest request) {
         service.createNewReservation(tripId, request);
         return new ResponseEntity<>(format("La reservation pour le client identifié par %s est en cours",request.identity()),HttpStatus.CREATED);
     }
@@ -66,5 +66,11 @@ public class ReservationController {
     ResponseEntity<String> editReservationStatus(@PathVariable String identifier, @RequestBody @Valid UpdateReservationRequest request) {
         service.updateReservation(identifier, request);
         return new ResponseEntity<>(format("La reservation numéro %s a été modifiée avec succès",identifier),HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{identifier}")
+    ResponseEntity<Void> deleteReservation(@PathVariable String identifier) {
+        service.deleteReservation(identifier);
+        return ResponseEntity.noContent().build();
     }
 }

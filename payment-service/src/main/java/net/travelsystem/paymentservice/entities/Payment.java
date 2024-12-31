@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.travelsystem.paymentservice.dto.card.CardResponse;
+import net.travelsystem.paymentservice.dto.external_services.CardResponse;
 import net.travelsystem.paymentservice.enums.PaymentStatus;
 
 import java.time.LocalDateTime;
@@ -24,7 +24,6 @@ public class Payment {
     private Double amount;
     private String currency;
     private String cardNumber;
-    private Long tripId;
     private String reservationIdentifier;
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;

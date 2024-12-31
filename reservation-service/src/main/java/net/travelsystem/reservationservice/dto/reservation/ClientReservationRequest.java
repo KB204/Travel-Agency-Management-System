@@ -2,7 +2,7 @@ package net.travelsystem.reservationservice.dto.reservation;
 
 import jakarta.validation.constraints.*;
 
-public record ReservationRequest(
+public record ClientReservationRequest(
         @NotEmpty(message = "La carte d'identité du client est obligatoire")
         String identity,
         @NotEmpty(message = "Le numéro de passport du client est obligatoire")

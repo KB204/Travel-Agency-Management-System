@@ -10,4 +10,5 @@ public record ReservationResponseDTO(
         ReservationStatus status,
         LocalDateTime reservationDate,
         Double totalPrice,
+        Integer nbrTickets,
         TripResponseDetails trip) {}

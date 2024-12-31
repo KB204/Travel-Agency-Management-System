@@ -26,6 +26,7 @@ public class Reservation {
     private LocalDateTime reservationDate;
     private LocalDateTime updatedAt;
     private Double totalPrice;
+    private Integer nbrTickets;
     private LocalDateTime flightDepartureTime;
     private String departureLocation;
     private LocalDate returnDate;

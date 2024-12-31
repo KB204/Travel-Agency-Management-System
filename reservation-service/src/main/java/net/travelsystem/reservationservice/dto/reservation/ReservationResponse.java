@@ -16,6 +16,7 @@ public record ReservationResponse(
         LocalDateTime reservationDate,
         LocalDateTime updatedAt,
         Double totalPrice,
+        Integer nbrTickets,
         ClientResponseDTO client,
         TripResponseDTO trip,
         HotelConventionDTO hotelConvention,

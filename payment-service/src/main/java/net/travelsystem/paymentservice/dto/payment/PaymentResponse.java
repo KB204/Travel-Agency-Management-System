@@ -1,6 +1,6 @@
 package net.travelsystem.paymentservice.dto.payment;
 
-import net.travelsystem.paymentservice.dto.card.CardResponse;
+import net.travelsystem.paymentservice.dto.external_services.CardResponse;
 import net.travelsystem.paymentservice.enums.PaymentStatus;
 
 import java.time.LocalDateTime;

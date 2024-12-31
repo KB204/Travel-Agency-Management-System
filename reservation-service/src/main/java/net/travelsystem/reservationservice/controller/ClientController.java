@@ -25,7 +25,7 @@ public class ClientController {
 
     @GetMapping("/{identity}/clientReservations")
     ResponseEntity<Long> calculateReservations(@PathVariable String identity) {
-        Long total = service.calculateClientReservations(identity);
+        long total = service.calculateClientReservations(identity);
         return new ResponseEntity<>(total,HttpStatus.OK);
     }
 }

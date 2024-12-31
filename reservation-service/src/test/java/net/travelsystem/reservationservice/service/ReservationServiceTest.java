@@ -102,13 +102,14 @@ class ReservationServiceTest {
     @Test
     void shouldCalculateReservationTotalAmount() {
         // given
-        Client client = Client.builder().identity("test").nbrTickets(3).build();
+        Client client = Client.builder().identity("test").build();
         Trip trip = Trip.builder().price(500.0).build();
 
         Reservation reservation = Reservation.builder()
                 .identifier("test")
                 .reservationDate(LocalDateTime.now())
                 .status(ReservationStatus.PENDING)
+                .nbrTickets(3)
                 .trip(trip)
                 .client(client)
                 .build();
@@ -125,13 +126,14 @@ class ReservationServiceTest {
     @Test
     void shouldNotCalculateReservationTotalAmount() {
         // given
-        Client client = Client.builder().identity("test").nbrTickets(3).build();
+        Client client = Client.builder().identity("test").build();
         Trip trip = Trip.builder().price(500.0).build();
 
         Reservation reservation = Reservation.builder()
                 .identifier("test")
                 .reservationDate(LocalDateTime.now())
                 .status(ReservationStatus.PENDING)
+                .nbrTickets(3)
                 .trip(trip)
                 .client(client)
                 .build();

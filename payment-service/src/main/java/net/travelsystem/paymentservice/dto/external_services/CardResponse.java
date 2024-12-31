@@ -1,4 +1,4 @@
-package net.travelsystem.paymentservice.dto.card;
+package net.travelsystem.paymentservice.dto.external_services;
 
 import lombok.Builder;
 

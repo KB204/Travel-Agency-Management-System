@@ -4,7 +4,7 @@ import net.travelsystem.paymentservice.clients.CardRestClient;
 import net.travelsystem.paymentservice.clients.ReservationRestClient;
 import net.travelsystem.paymentservice.dao.PaymentRepository;
 import net.travelsystem.paymentservice.exceptions.ResourceAlreadyExists;
-import net.travelsystem.paymentservice.dto.card.CardResponse;
+import net.travelsystem.paymentservice.dto.external_services.CardResponse;
 import net.travelsystem.paymentservice.dto.payment.PaymentRequest;
 import net.travelsystem.paymentservice.dto.payment.PaymentResponse;
 import net.travelsystem.paymentservice.entities.Payment;

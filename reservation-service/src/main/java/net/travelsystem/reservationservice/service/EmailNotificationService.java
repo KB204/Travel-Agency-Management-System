@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static java.lang.String.format;
 
@@ -30,10 +31,12 @@ public class EmailNotificationService implements NotificationService {
         String customerFirstName = reservation.getClient().getFirstName();
         String customerLastName = reservation.getClient().getLastName();
         String tripDestination = reservation.getTrip().getDestination();
-        int nbrTravelers = reservation.getTrip().getAvailablePlaces();
+        int nbrTickets = reservation.getNbrTickets();
         double totalAmount = reservation.getTotalPrice();
 
-        LocalDateTime departureTime = reservation.getFlightDepartureTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String departureTime = reservation.getFlightDepartureTime().format(formatter);
+
         String departureOrigin = reservation.getDepartureLocation();
         LocalDate returnDate = reservation.getReturnDate();
         String hotelName = reservation.getHotelName();
@@ -51,7 +54,7 @@ public class EmailNotificationService implements NotificationService {
                         Réservation N° : %s
                         Nom du voyageur : %s %s
                         Destination : %s
-                        Nombre de voyageurs : %s
+                        Nombre de billets achetés : %s
                         Date de départ : %s
                         Lieu de départ : %s
                         Date de retour : %s
@@ -65,7 +68,7 @@ public class EmailNotificationService implements NotificationService {
                         Nous vous remercions encore pour votre confiance et vous souhaitons un excellent voyage !
                                                 
                         Cordialement.
-                        """,customerFirstName,identifier,customerLastName,customerFirstName,tripDestination,nbrTravelers,departureTime,departureOrigin,returnDate,hotelName,airlineName,totalAmount))
+                        """,customerFirstName,identifier,customerLastName,customerFirstName,tripDestination,nbrTickets,departureTime,departureOrigin,returnDate,hotelName,airlineName,totalAmount))
                 .subject("Confirmation de votre réservation – [Agence de voyage x]")
                 .build();
 

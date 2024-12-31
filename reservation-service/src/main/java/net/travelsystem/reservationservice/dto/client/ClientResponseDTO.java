@@ -6,5 +6,4 @@ public record ClientResponseDTO(
         String firstName,
         String lastName,
         String email,
-        String phoneNumber,
-        Integer nbrTickets) {}
+        String phoneNumber) {}

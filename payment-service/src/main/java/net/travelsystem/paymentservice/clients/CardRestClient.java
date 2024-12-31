@@ -2,7 +2,7 @@ package net.travelsystem.paymentservice.clients;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import net.travelsystem.paymentservice.dto.card.CardResponse;
+import net.travelsystem.paymentservice.dto.external_services.CardResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.service.annotation.GetExchange;
 
