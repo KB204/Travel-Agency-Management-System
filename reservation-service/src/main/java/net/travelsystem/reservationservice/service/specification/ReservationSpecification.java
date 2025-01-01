@@ -1,6 +1,7 @@
 package net.travelsystem.reservationservice.service.specification;
 
 import net.travelsystem.reservationservice.entities.Reservation;
+import net.travelsystem.reservationservice.enums.ReservationStatus;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
@@ -62,5 +63,15 @@ public class ReservationSpecification {
                         .map(client -> criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("lastName")),
                                 "%" + lastName.toLowerCase() + "%"))
                         .orElse(criteriaBuilder.conjunction());
+    }
+
+    public static  Specification<Reservation> clientApprovedReservations(String identity, ReservationStatus status) {
+        return (root, query, criteriaBuilder) ->
+                identity == null || identity.trim().isEmpty() || status == null ?
+                        criteriaBuilder.conjunction() :
+                        criteriaBuilder.and(
+                                criteriaBuilder.equal(root.get("client").get("identity"),identity),
+                                criteriaBuilder.equal(root.get("status"),status)
+                        );
     }
 }

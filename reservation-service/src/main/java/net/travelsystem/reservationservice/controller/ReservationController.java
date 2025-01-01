@@ -56,6 +56,12 @@ public class ReservationController {
         return new ResponseEntity<>(clientReservations,HttpStatus.OK);
     }
 
+    @GetMapping("/{identity}/clientReservations")
+    ResponseEntity<Long> calculateReservations(@PathVariable String identity) {
+        long total = service.calculateClientReservations(identity);
+        return new ResponseEntity<>(total,HttpStatus.OK);
+    }
+
     @PostMapping("/newReservation")
     ResponseEntity<String> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ClientReservationRequest request) {
         service.createNewReservation(tripId, request);

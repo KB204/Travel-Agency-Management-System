@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface ClientService {
     List<ClientResponse> getAllCustomers();
-    long calculateClientReservations(String identity);
 }

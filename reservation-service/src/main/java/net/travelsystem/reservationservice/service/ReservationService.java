@@ -15,6 +15,7 @@ public interface ReservationService {
     void completeReservation(PaymentEvent event);
     void updateReservation(String identifier, UpdateReservationRequest request);
     ClientResponseDetails getClientReservations(String identity, String status, Double amount, String date, Pageable pageable);
+    long calculateClientReservations(String identity);
     Double reservationTotalAmount(String identifier);
     void deleteReservation(String identifier);
 }

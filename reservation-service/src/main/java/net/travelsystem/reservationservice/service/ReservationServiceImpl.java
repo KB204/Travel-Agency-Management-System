@@ -180,6 +180,17 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public long calculateClientReservations(String identity) {
+        Client client = clientRepository.findByIdentity(identity)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(format("Client identifié par %s n'existe pas",identity)));
+
+        Specification<Reservation> specification = Specification.where(ReservationSpecification.clientApprovedReservations(client.getIdentity(), ReservationStatus.APPROVED));
+        return reservationRepository.count(specification);
+    }
+
+    @Override
     public Double reservationTotalAmount(String identifier) {
         Reservation reservation = reservationRepository.findByIdentifierIgnoreCase(identifier)
                 .orElseThrow(() -> new ResourceNotFoundException(format("La réservation numéro %s n'existe pas",identifier)));
