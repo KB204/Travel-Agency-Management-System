@@ -9,10 +9,7 @@ import net.travelsystem.reservationservice.dao.TripRepository;
 import net.travelsystem.reservationservice.dto.client.ClientResponseDetails;
 import net.travelsystem.reservationservice.dto.external_services.FlightConvention;
 import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
-import net.travelsystem.reservationservice.dto.reservation.ClientReservationRequest;
-import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
-import net.travelsystem.reservationservice.dto.reservation.ReservationResponseDTO;
-import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
+import net.travelsystem.reservationservice.dto.reservation.*;
 import net.travelsystem.reservationservice.entities.Client;
 import net.travelsystem.reservationservice.entities.Reservation;
 import net.travelsystem.reservationservice.entities.Trip;
@@ -88,7 +85,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void createNewReservation(Long tripId, ClientReservationRequest request) {
+    public ClientReservationResponse createNewReservation(Long tripId, ClientReservationRequest request) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new ResourceNotFoundException("Voyage n'existe pas"));
 
@@ -124,6 +121,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.save(reservation);
         clientRepository.save(client);
+
+        return new ClientReservationResponse(reservation.getIdentifier());
     }
 
     @Override

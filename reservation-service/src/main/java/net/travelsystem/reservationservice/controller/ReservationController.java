@@ -3,6 +3,7 @@ package net.travelsystem.reservationservice.controller;
 import jakarta.validation.Valid;
 import net.travelsystem.reservationservice.dto.client.ClientResponseDetails;
 import net.travelsystem.reservationservice.dto.reservation.ClientReservationRequest;
+import net.travelsystem.reservationservice.dto.reservation.ClientReservationResponse;
 import net.travelsystem.reservationservice.dto.reservation.ReservationResponse;
 import net.travelsystem.reservationservice.dto.reservation.UpdateReservationRequest;
 import net.travelsystem.reservationservice.service.ReservationService;
@@ -63,9 +64,9 @@ public class ReservationController {
     }
 
     @PostMapping("/newReservation")
-    ResponseEntity<String> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ClientReservationRequest request) {
-        service.createNewReservation(tripId, request);
-        return new ResponseEntity<>(format("La reservation pour le client identifié par %s est en cours",request.identity()),HttpStatus.CREATED);
+    ResponseEntity<ClientReservationResponse> saveNewReservation(@RequestParam Long tripId, @RequestBody @Valid ClientReservationRequest request) {
+        ClientReservationResponse response = service.createNewReservation(tripId, request);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @PutMapping("/{identifier}/reservation/updateStatus")
