@@ -1,6 +1,7 @@
 package net.travelsystem.reservationservice.controller;
 
 import jakarta.validation.Valid;
+import net.travelsystem.reservationservice.dto.trip.TripDetailsDTO;
 import net.travelsystem.reservationservice.dto.trip.TripRequest;
 import net.travelsystem.reservationservice.dto.trip.TripResponse;
 import net.travelsystem.reservationservice.dto.trip.TripUpdateRequest;
@@ -31,6 +32,12 @@ public class TripController {
             @RequestParam(required = false) String identifier,
             Pageable pageable) {
         return service.getAllTrips(name, price, destination, identifier, pageable); }
+
+    @GetMapping("/{id}/tripDetails")
+    ResponseEntity<TripDetailsDTO> getTripDetails(@PathVariable Long id) {
+        TripDetailsDTO tripDetailsDTO = service.tripReservationsDetails(id);
+        return new ResponseEntity<>(tripDetailsDTO,HttpStatus.OK);
+    }
 
     @PostMapping
     ResponseEntity<String> saveNewTrip(@RequestBody @Valid TripRequest request) {

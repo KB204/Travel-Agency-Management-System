@@ -5,10 +5,13 @@ import net.travelsystem.reservationservice.clients.HotelConventionRest;
 import net.travelsystem.reservationservice.dao.TripRepository;
 import net.travelsystem.reservationservice.dto.external_services.FlightConvention;
 import net.travelsystem.reservationservice.dto.external_services.HotelConvention;
+import net.travelsystem.reservationservice.dto.trip.TripDetailsDTO;
 import net.travelsystem.reservationservice.dto.trip.TripRequest;
 import net.travelsystem.reservationservice.dto.trip.TripResponse;
 import net.travelsystem.reservationservice.dto.trip.TripUpdateRequest;
+import net.travelsystem.reservationservice.entities.Reservation;
 import net.travelsystem.reservationservice.entities.Trip;
+import net.travelsystem.reservationservice.enums.ReservationStatus;
 import net.travelsystem.reservationservice.exceptions.ResourceAlreadyExists;
 import net.travelsystem.reservationservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.reservationservice.mapper.TripMapper;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -83,6 +87,26 @@ public class TripServiceImpl implements TripService {
         trip.setAvailablePlaces(request.availablePlaces());
 
         tripRepository.save(trip);
+    }
+
+    @Override
+    @Transactional
+    public TripDetailsDTO tripReservationsDetails(Long id) {
+        Trip trip = tripRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
+
+        long nbr = trip.getReservations()
+                .stream()
+                .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
+                .count();
+
+        double total = trip.getReservations()
+                .stream()
+                .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
+                .mapToDouble(Reservation::getTotalPrice)
+                .sum();
+
+        return new TripDetailsDTO(nbr,total);
     }
 
     @Override
