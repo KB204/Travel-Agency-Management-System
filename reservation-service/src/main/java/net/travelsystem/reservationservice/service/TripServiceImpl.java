@@ -24,6 +24,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Month;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @Service
 public class TripServiceImpl implements TripService {
@@ -95,18 +99,23 @@ public class TripServiceImpl implements TripService {
         Trip trip = tripRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
 
-        long nbr = trip.getReservations()
+        Map<Month,Long> monthCount = trip.getReservations()
                 .stream()
                 .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
-                .count();
+                .collect(Collectors.groupingBy(
+                        reservation -> reservation.getReservationDate().getMonth(),
+                        Collectors.counting()
+                ));
 
-        double total = trip.getReservations()
+        Map<Month,Double> monthTotal = trip.getReservations()
                 .stream()
                 .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
-                .mapToDouble(Reservation::getTotalPrice)
-                .sum();
+                .collect(Collectors.groupingBy(
+                        reservation -> reservation.getReservationDate().getMonth(),
+                        Collectors.summingDouble(Reservation::getTotalPrice)
+                ));
 
-        return new TripDetailsDTO(nbr,total);
+        return new TripDetailsDTO(monthCount,monthTotal);
     }
 
     @Override

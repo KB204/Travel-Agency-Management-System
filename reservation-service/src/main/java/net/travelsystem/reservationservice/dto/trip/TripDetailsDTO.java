@@ -1,3 +1,6 @@
 package net.travelsystem.reservationservice.dto.trip;
 
-public record TripDetailsDTO(long nbrReservations,double totalAmount) {}
+import java.time.Month;
+import java.util.Map;
+
+public record TripDetailsDTO(Map<Month,Long> monthCount, Map<Month,Double> monthTotal) {}
