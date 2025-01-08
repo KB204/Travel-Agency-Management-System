@@ -5,6 +5,7 @@ import net.travelsystem.reservationservice.entities.Reservation;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
@@ -74,9 +75,9 @@ public class BatchConfig {
     @Bean
     public SqlPagingQueryProviderFactoryBean queryProvider() {
         var queryProvider = new SqlPagingQueryProviderFactoryBean();
-        queryProvider.setSelectClause("SELECT id, identifier, status, reservationDate, totalPrice, nbrTickets");
+        queryProvider.setSelectClause("SELECT id, identifier, status, reservation_Date, total_Price, nbr_Tickets");
         queryProvider.setFromClause("FROM reservation");
-        queryProvider.setWhereClause("WHERE status = PENDING");
+        queryProvider.setWhereClause("WHERE status = 'PENDING'");
         queryProvider.setDataSource(dataSource);
         queryProvider.setDatabaseType(DatabaseType.POSTGRES.name());
         queryProvider.setSortKeys(Collections.singletonMap("id", Order.ASCENDING));
@@ -84,6 +85,7 @@ public class BatchConfig {
     }
 
     @Bean
+    @StepScope
     public FlatFileItemWriter<Reservation> flatFileItemReader(@Value("#{jobParameters['output.file.name']}") String outputFile) {
         return new FlatFileItemWriterBuilder<Reservation>()
                 .name("Fichier des réservations en cours de traitement")

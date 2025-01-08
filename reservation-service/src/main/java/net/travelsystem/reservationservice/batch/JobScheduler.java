@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Component
@@ -23,9 +24,11 @@ public class JobScheduler {
         this.jobLauncher = jobLauncher;
     }
 
-    @Scheduled(cron = "0/30 * * * *") // job will run every 30 seconds
+    @Scheduled(cron = "0/30 * * * * *") // job will run every 30 seconds
     public void triggerJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        String fileName = LocalDateTime.now().toString().concat("_reservations.csv");
+        String fileName = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+                .concat("_reservations.csv");
 
         var jobParameters = new JobParametersBuilder()
                 .addString("output.file.name",fileName)
