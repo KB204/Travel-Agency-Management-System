@@ -88,7 +88,7 @@ public class BatchConfig {
     @Bean
     @StepScope
     public FlatFileItemWriter<Reservation> flatFileItemReader(@Value("#{jobParameters['output.file.name']}") String outputFile, @Value("${file.upload-dir}") String uploadDir) {
-        String filePath = String.valueOf(Paths.get(uploadDir,outputFile));
+        String filePath = Paths.get(uploadDir,outputFile).toString();
         return new FlatFileItemWriterBuilder<Reservation>()
                 .name("File of pending reservations")
                 .resource(new FileSystemResource(filePath))

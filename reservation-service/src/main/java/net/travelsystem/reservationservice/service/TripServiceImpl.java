@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Month;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -95,27 +96,50 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional
-    public TripDetailsDTO tripReservationsDetails(Long id) {
-        Trip trip = tripRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Voyage non trouvé"));
+    public TripDetailsDTO tripReservationsDetails() {
+        List<Trip> trips = tripRepository.findAll();
 
-        Map<Month,Long> monthCount = trip.getReservations()
-                .stream()
+        Map<Map.Entry<Integer,Month>, Long> monthYearCount = trips.stream()
+                .flatMap(trip -> trip.getReservations().stream())
                 .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
                 .collect(Collectors.groupingBy(
-                        reservation -> reservation.getReservationDate().getMonth(),
-                        Collectors.counting()
-                ));
+                        reservation -> Map.entry(
+                                reservation.getReservationDate().getYear(),
+                                reservation.getReservationDate().getMonth()
+                        ),
+                        Collectors.counting()));
 
-        Map<Month,Double> monthTotal = trip.getReservations()
-                .stream()
+        Map<Map.Entry<Integer,Month>, Double> monthYearTotal = trips.stream()
+                .flatMap(trip -> trip.getReservations().stream())
                 .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
                 .collect(Collectors.groupingBy(
-                        reservation -> reservation.getReservationDate().getMonth(),
+                        reservation -> Map.entry(
+                                reservation.getReservationDate().getYear(),
+                                reservation.getReservationDate().getMonth()
+                        ),
+                        Collectors.summingDouble(Reservation::getTotalPrice)));
+
+        Map<Integer,Double> totalYear = trips.stream()
+                .flatMap(trip -> trip.getReservations().stream())
+                .filter(reservation -> reservation.getStatus().equals(ReservationStatus.APPROVED))
+                .collect(Collectors.groupingBy(
+                        reservation -> reservation.getReservationDate().getYear(),
                         Collectors.summingDouble(Reservation::getTotalPrice)
                 ));
 
-        return new TripDetailsDTO(monthCount,monthTotal);
+        Map<Map.Entry<Integer, Month>, Double> monthPercentage = monthYearTotal.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> {
+                            Integer year = entry.getKey().getKey();
+                            Double monthTotalValue = entry.getValue();
+                            Double yearTotalValue = totalYear.get(year);
+                            return (monthTotalValue / yearTotalValue) * 100;
+                        }
+                ));
+
+        return new TripDetailsDTO(monthYearCount,monthYearTotal,monthPercentage,totalYear);
     }
 
     @Override

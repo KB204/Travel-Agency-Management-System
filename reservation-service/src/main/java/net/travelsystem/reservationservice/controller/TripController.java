@@ -33,9 +33,9 @@ public class TripController {
             Pageable pageable) {
         return service.getAllTrips(name, price, destination, identifier, pageable); }
 
-    @GetMapping("/{id}/tripDetails")
-    ResponseEntity<TripDetailsDTO> getTripDetails(@PathVariable Long id) {
-        TripDetailsDTO tripDetailsDTO = service.tripReservationsDetails(id);
+    @GetMapping("/tripsDetails")
+    ResponseEntity<TripDetailsDTO> tripsDetails() {
+        TripDetailsDTO tripDetailsDTO = service.tripReservationsDetails();
         return new ResponseEntity<>(tripDetailsDTO,HttpStatus.OK);
     }
 

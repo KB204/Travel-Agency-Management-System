@@ -12,6 +12,6 @@ public interface TripService {
     Page<TripResponse> getAllTrips(String name, Double price, String destination, String identifier, Pageable pageable);
     void createTrip(TripRequest request);
     void updateTrip(Long id, TripUpdateRequest request);
-    TripDetailsDTO tripReservationsDetails(Long id);
+    TripDetailsDTO tripReservationsDetails();
     void deleteTrip(Long id);
 }
