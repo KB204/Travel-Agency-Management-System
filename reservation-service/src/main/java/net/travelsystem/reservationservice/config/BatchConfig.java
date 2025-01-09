@@ -26,6 +26,7 @@ import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.nio.file.Paths;
 import java.util.Collections;
 
 @Configuration
@@ -54,7 +55,7 @@ public class BatchConfig {
     @Bean
     public Step fromReservationsToFile(FlatFileItemWriter<Reservation> flatFileItemWriter, JdbcPagingItemReader<Reservation> reservationJdbcPagingItemReader) {
         return new StepBuilder("from db to file",repository)
-                .<Reservation,Reservation>chunk(10,transactionManager)
+                .<Reservation,Reservation>chunk(20,transactionManager)
                 .reader(reservationJdbcPagingItemReader)
                 .processor(processor)
                 .writer(flatFileItemWriter)
@@ -75,21 +76,22 @@ public class BatchConfig {
     @Bean
     public SqlPagingQueryProviderFactoryBean queryProvider() {
         var queryProvider = new SqlPagingQueryProviderFactoryBean();
-        queryProvider.setSelectClause("SELECT id, identifier, status, reservation_Date, total_Price, nbr_Tickets");
+        queryProvider.setSelectClause("SELECT identifier, status, reservation_date, total_price, nbr_tickets");
         queryProvider.setFromClause("FROM reservation");
         queryProvider.setWhereClause("WHERE status = 'PENDING'");
         queryProvider.setDataSource(dataSource);
         queryProvider.setDatabaseType(DatabaseType.POSTGRES.name());
-        queryProvider.setSortKeys(Collections.singletonMap("id", Order.ASCENDING));
+        queryProvider.setSortKeys(Collections.singletonMap("reservation_date", Order.DESCENDING));
         return queryProvider;
     }
 
     @Bean
     @StepScope
-    public FlatFileItemWriter<Reservation> flatFileItemReader(@Value("#{jobParameters['output.file.name']}") String outputFile) {
+    public FlatFileItemWriter<Reservation> flatFileItemReader(@Value("#{jobParameters['output.file.name']}") String outputFile, @Value("${file.upload-dir}") String uploadDir) {
+        String filePath = String.valueOf(Paths.get(uploadDir,outputFile));
         return new FlatFileItemWriterBuilder<Reservation>()
-                .name("Fichier des réservations en cours de traitement")
-                .resource(new FileSystemResource(outputFile))
+                .name("File of pending reservations")
+                .resource(new FileSystemResource(filePath))
                 .headerCallback(writer -> writer.append("En tête du fichier"))
                 .delimited()
                 .delimiter(";")

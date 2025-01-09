@@ -24,7 +24,7 @@ public class JobScheduler {
         this.jobLauncher = jobLauncher;
     }
 
-    @Scheduled(cron = "0/30 * * * * *") // job will run every 30 seconds
+    @Scheduled(cron = "0 0/15 * * * *") // job will run every 15 minutes
     public void triggerJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String fileName = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
