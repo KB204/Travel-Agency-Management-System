@@ -15,7 +15,10 @@ public class ReservationProcessor implements ItemProcessor<Reservation,Reservati
     public Reservation process(Reservation item) throws Exception {
         log.info("Processing The Item : {}",item);
         if (item.getReservationDate().isBefore(LocalDateTime.now().minusHours(24))){
-            //item.setReservationDate(LocalDateTime.parse(item.getReservationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+            item.setReservationDate(LocalDateTime.parse(
+                    item.getReservationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+            ));
             return item;
         }
         return null;
