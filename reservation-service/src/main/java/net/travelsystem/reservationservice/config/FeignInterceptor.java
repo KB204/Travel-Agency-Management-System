@@ -14,8 +14,9 @@ public class FeignInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate requestTemplate) {
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication authentication = context.getAuthentication();
-        JwtAuthenticationToken token = (JwtAuthenticationToken) authentication;
-        String accessToken = token.getToken().getTokenValue();
-        requestTemplate.header("Authorization","Bearer "+accessToken);
+        if (authentication instanceof JwtAuthenticationToken token) {
+            String accessToken = token.getToken().getTokenValue();
+            requestTemplate.header("Authorization", "Bearer " + accessToken);
+        }
     }
 }

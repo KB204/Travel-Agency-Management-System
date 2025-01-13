@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -36,12 +37,14 @@ public class HotelController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<String> updateExistingHotel(@PathVariable Long id,@RequestBody @Valid HotelRequest request){
         service.updateHotel(id, request);
         return new ResponseEntity<>(String.format("Hotel %s a été modifié avec succès",request.name()),HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<HotelResponse> removeHotelById(@PathVariable Long id){
         service.deleteHotel(id);
         return ResponseEntity.noContent().build();

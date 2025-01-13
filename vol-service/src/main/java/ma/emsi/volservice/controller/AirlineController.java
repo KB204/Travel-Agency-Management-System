@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -36,11 +37,13 @@ public class AirlineController {
         return new ResponseEntity<>(String.format("Compagnie aérienne %s identifié par %s a été créé avec succès",airlineRequest.name(),airlineRequest.code()), HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<String> updateAirline(@PathVariable Long id, @RequestBody @Valid AirlineRequest airlineRequest) {
         airlineService.updateAirline(id, airlineRequest);
         return new ResponseEntity<>(String.format("Compagnie aérienne %s a été modifié avec succès",airlineRequest.name()), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<String> deleteAirline(@PathVariable Long id) {
         airlineService.deleteAirline(id);
         return ResponseEntity.noContent().build();

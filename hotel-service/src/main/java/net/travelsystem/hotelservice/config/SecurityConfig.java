@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers("/swagger-ui.html","/swagger-ui/**", "/v3/api-docs/**",
-                                        "/api-docs/**","/aggregate/**","/swagger-resources/**").permitAll()
+                                        "/api-docs/**","/aggregate/**","/swagger-resources/**","/api/conventions/{identifier}/details").permitAll()
                                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
                 .build();
