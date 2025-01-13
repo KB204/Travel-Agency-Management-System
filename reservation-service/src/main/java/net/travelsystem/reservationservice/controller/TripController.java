@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/trips")
-@CrossOrigin(origins = "http://localhost:4200")
 public class TripController {
     private final TripService service;
 
@@ -23,7 +22,7 @@ public class TripController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     Page<TripResponse> findAllTrips(
             @RequestParam(required = false) String name,
@@ -39,7 +38,7 @@ public class TripController {
         return new ResponseEntity<>(tripDetailsDTO,HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/newTrip")
     ResponseEntity<String> saveNewTrip(@RequestBody @Valid TripRequest request) {
         service.createTrip(request);
         return new ResponseEntity<>("Voyage a été crée avec succès",HttpStatus.CREATED);

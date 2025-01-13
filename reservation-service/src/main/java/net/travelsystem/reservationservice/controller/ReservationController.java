@@ -18,7 +18,6 @@ import static java.lang.String.format;
 
 @RestController
 @RequestMapping("/api/reservations")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ReservationController {
     private final ReservationService service;
 
@@ -26,7 +25,7 @@ public class ReservationController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     Page<ReservationResponse> findAllReservations(
             @RequestParam(required = false) String identifier,

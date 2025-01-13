@@ -9,12 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/flightsConventions")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ConventionController {
     private final ConventionService service;
 
@@ -22,7 +22,7 @@ public class ConventionController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     Page<ConventionResponse> getAllFlightsConventions(
             @RequestParam(required = false) Integer nbr,
@@ -47,7 +47,8 @@ public class ConventionController {
         return new ResponseEntity<>(conventionFlightDetails,HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/newConvention")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<String> saveNewFlightConvention(@RequestBody @Valid ConventionRequest request) {
         service.createNewConvention(request);
         return new ResponseEntity<>(String.format("La convention identifié par %s a été créé avec succès",request.flightNo()),HttpStatus.CREATED);

@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/conventions")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ConventionController {
     private final ConventionService service;
 
@@ -23,7 +23,7 @@ public class ConventionController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     Page<ConventionResponse> findAllHotelsConventions(
             @RequestParam(required = false) String identifier,
@@ -47,7 +47,8 @@ public class ConventionController {
         ConventionResponseDTO conventionHotelDetails = service.getConventionHotelDetails(identifier);
         return new ResponseEntity<>(conventionHotelDetails,HttpStatus.OK);
     }
-    @PostMapping
+    @PostMapping("/newConvention")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<String> saveNewHotelConvention(@RequestBody @Valid ConventionRequest request){
         service.createHotelConvention(request);
         return new ResponseEntity<>(String.format("La convention avec l'hotel %s situé a %s a été créé avec succès",request.name(),request.location()),HttpStatus.CREATED);
