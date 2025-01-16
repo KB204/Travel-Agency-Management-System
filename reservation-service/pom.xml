@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.travel-system</groupId>
 	<artifactId>reservation-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>reservation-service</name>
 	<description>reservation-service</description>
 	<url/>
@@ -190,6 +190,9 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<image>
+						<name>travelsystem/${project.artifactId}</name>
+					</image>
 				</configuration>
 			</plugin>
 		</plugins>

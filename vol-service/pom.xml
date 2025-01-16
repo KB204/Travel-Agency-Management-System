@@ -10,7 +10,7 @@
     </parent>
     <groupId>ma.emsi</groupId>
     <artifactId>vol-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>vol-service</name>
     <description>vol-service</description>
     <url/>
@@ -150,6 +150,9 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <image>
+                        <name>travelsystem/${project.artifactId}</name>
+                    </image>
                 </configuration>
             </plugin>
         </plugins>
