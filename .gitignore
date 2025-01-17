@@ -3,11 +3,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 variables.env
-postgres-hotel
-postgres-vol
-postgres-payment
-postgres-reservation
-mongo-data
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
