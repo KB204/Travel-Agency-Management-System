@@ -83,27 +83,28 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
 
+  localhost:
+    image: alpine:latest
+    command: sleep infinity
+    ports:
+      - '8080:8080'
+      - '8081:8081'
+      - '8082:8082'
+      - '8085:8085'
+      - '8087:8087'
+
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:24.0.1
-    command: start
+    command: start-dev
     environment:
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT_BACKCHANNEL: false
-      KC_HTTP_ENABLED: true
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HEALTH_ENABLED: true
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://keycloak-postgres/keycloak_db
       KC_DB_USERNAME: user
       KC_DB_PASSWORD: password
-    ports:
-      - '8080:8080'
-    expose:
-      - '8080'
+    network_mode: "service:localhost"
     depends_on:
       keycloak-postgres:
         condition: service_started
@@ -151,16 +152,13 @@ services:
   hotel-service:
     image: travelsystem/hotel-service:latest
     container_name: hotel-service
-    ports:
-      - '8081:8081'
-    expose:
-      - '8081'
+    network_mode: "service:localhost"
     environment:
        - DISCOVERY_SERVICE_URL=http://discovery-service:8761/eureka
        - CONFIG_SERVICE_URL=http://config-service:9999
        - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
-       - KEYCLOAK_URL=http://keycloak:8080/realms/travel-system
-       - KEYCLOAK_CERTS_URL=http://keycloak:8080/realms/travel-system/protocol/openid-connect/certs
+       - KEYCLOAK_URL=http://localhost:8080/realms/travel-system
+       - KEYCLOAK_CERTS_URL=http://localhost:8080/realms/travel-system/protocol/openid-connect/certs
        - HOTEL_DB=jdbc:postgresql://postgres-hotel:5432/hotel_service_db
        - DB_USER=user
        - DB_PWD=password
@@ -175,16 +173,13 @@ services:
   vol-service:
     image: travelsystem/vol-service:latest
     container_name: vol-service
-    ports:
-      - '8085:8085'
-    expose:
-      - '8085'
+    network_mode: "service:localhost"
     environment:
       - DISCOVERY_SERVICE_URL=http://discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://config-service:9999
       - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
-      - KEYCLOAK_URL=http://keycloak:8080/realms/travel-system
-      - KEYCLOAK_CERTS_URL=http://keycloak:8080/realms/travel-system/protocol/openid-connect/certs
+      - KEYCLOAK_URL=http://localhost:8080/realms/travel-system
+      - KEYCLOAK_CERTS_URL=http://localhost:8080/realms/travel-system/protocol/openid-connect/certs
       - VOL_DB=jdbc:postgresql://postgres-vol:5432/vol_service_db
       - DB_USER=user
       - DB_PWD=password
@@ -199,20 +194,17 @@ services:
   reservation-service:
     image: travelsystem/reservation-service:latest
     container_name: reservation-service
-    ports:
-      - '8082:8082'
-    expose:
-      - '8082'
+    network_mode: "service:localhost"
     environment:
       - DISCOVERY_SERVICE_URL=http://discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://config-service:9999
       - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
-      - KEYCLOAK_URL=http://keycloak:8080/realms/travel-system
-      - KEYCLOAK_CERTS_URL=http://keycloak:8080/realms/travel-system/protocol/openid-connect/certs
+      - KEYCLOAK_URL=http://localhost:8080/realms/travel-system
+      - KEYCLOAK_CERTS_URL=http://localhost:8080/realms/travel-system/protocol/openid-connect/certs
       - RESERVATION_DB=jdbc:postgresql://postgres-reservation:5432/reservation_service_db
       - DB_USER=user
       - DB_PWD=password
-      - KAFKA_URL=http://broker:9092
+      - KAFKA_URL=broker:29092
       - FILE_UPLOAD_DIR=/app/Pictures
     volumes:
       - C:/Users/Administrator/Pictures:/app/Pictures
@@ -231,18 +223,15 @@ services:
   payment-service:
     image: travelsystem/payment-service:latest
     container_name: payment-service
-    ports:
-      - '8087:8087'
-    expose:
-      - '8087'
+    network_mode: "service:localhost"
     environment:
       - DISCOVERY_SERVICE_URL=http://discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://config-service:9999
       - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
-      - KEYCLOAK_URL=http=//keycloak:8080/realms/travel-system
-      - KEYCLOAK_CERTS_URL=http://keycloak:8080/realms/travel-system/protocol/openid-connect/certs
-      - KAFKA_URL=http://broker:9092
-      - CARD_SERVICE_URL=http://card-service:9090
+      - KEYCLOAK_URL=http://localhost:8080/realms/travel-system
+      - KEYCLOAK_CERTS_URL=http://localhost:8080/realms/travel-system/protocol/openid-connect/certs
+      - KAFKA_URL=broker:29092
+      - CARD_SERVICE_URL=http://card-service:9090/api/cards
       - PAYMENT_DB=jdbc:postgresql://postgres-payment:5432/payment_service_db
       - DB_USER=user
       - DB_PWD=password
@@ -264,8 +253,8 @@ services:
     expose:
       - '9090'
     environment:
-      - KAFKA_URL=http://broker:9092
-      - CARD_DB=mongodb://admin:password@mongo-card:27017/card_service
+      - KAFKA_URL=broker:29092
+      - CARD_DB=mongodb://admin:password@mongo-card:27017/card_service?authSource=admin
     depends_on:
       mongo-card:
         condition: service_started
