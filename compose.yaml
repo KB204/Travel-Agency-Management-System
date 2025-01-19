@@ -261,6 +261,14 @@ services:
       broker:
         condition: service_started
 
+  front-backoffice:
+    image: travelsystem/front-backoffice:latest
+    container_name: front-backoffice
+    ports:
+      - '8089:80'
+    expose:
+      - '8089'
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
