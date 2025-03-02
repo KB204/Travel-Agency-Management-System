@@ -10,6 +10,12 @@ import net.travelsystem.paymentservice.enums.RefundStatus;
 import net.travelsystem.paymentservice.exceptions.PaymentException;
 import net.travelsystem.paymentservice.exceptions.ResourceNotFoundException;
 import net.travelsystem.paymentservice.mapper.RefundMapper;
+import net.travelsystem.paymentservice.service.specification.RefundSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +38,17 @@ public class RefundServiceImpl implements RefundService {
     }
 
     @Override
-    public List<RefundResponse> findAllRefunds() {
-        return refundRepository.findAll()
-                .stream()
-                .map(mapper::refundToDtoResponse)
-                .toList();
+    public Page<RefundResponse> findAllRefunds(String identifier, Double amount, String date, String status, Pageable pageable) {
+
+        Specification<Refund> specification = RefundSpecification.filterWithoutConditions()
+                .and(RefundSpecification.refundIdentifierEqual(identifier))
+                .and(RefundSpecification.refundAmountEqual(amount))
+                .and(RefundSpecification.refundDateLike(date))
+                .and(RefundSpecification.refundStatusEqual(status));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("processedAt").descending());
+
+        return refundRepository.findAll(specification,pageable)
+                .map(mapper::refundToDtoResponse);
     }
 
     @Override
@@ -44,9 +56,9 @@ public class RefundServiceImpl implements RefundService {
         var payment = paymentRepository.findByTransactionIdentifier(transactionIdentifier)
                 .orElseThrow(() -> new ResourceNotFoundException(format("Le paiement identifié par %s n'existe pas",transactionIdentifier)));
 
-        if (payment.getStatus().equals(PaymentStatus.COMPLETED)){
+        /*if (payment.getStatus().equals(PaymentStatus.COMPLETED)){
             throw new PaymentException(format("Le paiement identifié par %s ne peut pas être remboursé",transactionIdentifier));
-        }
+        }*/
 
         Refund refund = Refund.builder()
                 .processedAt(LocalDateTime.now())

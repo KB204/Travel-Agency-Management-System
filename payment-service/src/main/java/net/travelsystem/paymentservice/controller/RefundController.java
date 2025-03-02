@@ -4,11 +4,12 @@ import jakarta.validation.Valid;
 import net.travelsystem.paymentservice.dto.refund.RefundRequest;
 import net.travelsystem.paymentservice.dto.refund.RefundResponse;
 import net.travelsystem.paymentservice.service.RefundService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 import static java.lang.String.format;
 
@@ -23,8 +24,13 @@ public class RefundController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    List<RefundResponse> findAllRefunds() {
-        return service.findAllRefunds();
+    Page<RefundResponse> findAllRefunds(
+            @RequestParam(required = false) String identifier,
+            @RequestParam(required = false) Double amount,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String status,
+            Pageable pageable) {
+        return service.findAllRefunds(identifier, amount, date, status, pageable);
     }
 
     @PostMapping("/{identifier}/newRefund")
