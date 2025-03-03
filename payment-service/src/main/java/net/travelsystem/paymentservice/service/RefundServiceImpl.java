@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static java.lang.String.format;
 
@@ -56,9 +55,9 @@ public class RefundServiceImpl implements RefundService {
         var payment = paymentRepository.findByTransactionIdentifier(transactionIdentifier)
                 .orElseThrow(() -> new ResourceNotFoundException(format("Le paiement identifié par %s n'existe pas",transactionIdentifier)));
 
-        /*if (payment.getStatus().equals(PaymentStatus.COMPLETED)){
+        if (payment.getStatus().equals(PaymentStatus.COMPLETED)){
             throw new PaymentException(format("Le paiement identifié par %s ne peut pas être remboursé",transactionIdentifier));
-        }*/
+        }
 
         Refund refund = Refund.builder()
                 .processedAt(LocalDateTime.now())
