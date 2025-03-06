@@ -2,13 +2,13 @@ package net.travelsystem.paymentservice.service;
 
 import net.travelsystem.paymentservice.dao.PaymentRepository;
 import net.travelsystem.paymentservice.dao.RefundRepository;
+import net.travelsystem.paymentservice.dto.refund.RefundRequest;
 import net.travelsystem.paymentservice.entities.Payment;
 import net.travelsystem.paymentservice.entities.Refund;
 import net.travelsystem.paymentservice.enums.PaymentStatus;
 import net.travelsystem.paymentservice.enums.RefundStatus;
 import net.travelsystem.paymentservice.exceptions.PaymentException;
 import net.travelsystem.paymentservice.exceptions.ResourceNotFoundException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -110,7 +110,54 @@ class RefundServiceTest {
     }
 
     @Test
-    @Disabled
-    void acceptRefund() {
+    void shouldNotDeclineRefund() {
+        // given
+        String paymentIdentifier = "test";
+
+        // when
+        when(refundRepository.findByPayment_TransactionIdentifier(paymentIdentifier)).thenReturn(Optional.empty());
+
+        // then
+        assertThatThrownBy(() -> underTest.declineRefund(paymentIdentifier))
+                .isInstanceOf(ResourceNotFoundException.class);
+        verify(refundRepository,never()).save(any(Refund.class));
+    }
+
+    @Test
+    void shouldAcceptRefund() {
+        // given
+        String paymentIdentifier = "test";
+        RefundRequest request = new RefundRequest(5000.0);
+        Refund refund = Refund.builder()
+                .status(RefundStatus.ACCEPTED)
+                .refundAmount(request.refundAmount())
+                .payment(Payment.builder().status(PaymentStatus.REFUNDED).build())
+                .build();
+
+        when(refundRepository.findByPayment_TransactionIdentifier(paymentIdentifier)).thenReturn(Optional.of(refund));
+
+        // when
+        underTest.acceptRefund(paymentIdentifier,request);
+
+        // then
+        assertThat(refund.getStatus()).isEqualTo(RefundStatus.ACCEPTED);
+        assertThat(refund.getRefundAmount()).isEqualTo(request.refundAmount());
+        assertThat(refund.getPayment().getStatus()).isEqualTo(PaymentStatus.REFUNDED);
+        verify(refundRepository).save(refund);
+    }
+
+    @Test
+    void shouldNotAcceptRefund() {
+        // given
+        String paymentIdentifier = "test";
+        RefundRequest request = new RefundRequest(5000.0);
+
+        // when
+        when(refundRepository.findByPayment_TransactionIdentifier(paymentIdentifier)).thenReturn(Optional.empty());
+
+        // then
+        assertThatThrownBy(() -> underTest.acceptRefund(paymentIdentifier,request))
+                .isInstanceOf(ResourceNotFoundException.class);
+        verify(refundRepository,never()).save(any(Refund.class));
     }
 }
