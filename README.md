@@ -14,11 +14,13 @@ This is a full-featured **travel agency management system** built using a micros
 - Spring Batch
 - Kafka 
 - Keycloak
+- REST Client API
 - Spring Cloud:
   - Eureka Service Discovery
   - Config Server
   - API Gateway (Reactive)
   - Circuit Breaker (Resilience4J)
+  - OpenFeign (REST Communication)
 - Email Notification via SMTP
 - Unit Testing with JUnit 5
 - Integration Testing with TestContainers
